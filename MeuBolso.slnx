@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="MeuBolso.API/MeuBolso.API.csproj" />
+  <Project Path="MeuBolso.Application/MeuBolso.Application.csproj" Id="2c12b0bc-1532-4b95-bd99-160e75f063a0" />
   <Project Path="MeuBolso.Domain/MeuBolso.Domain.csproj" />
+  <Project Path="MeuBolso.Infrastructure/MeuBolso.Infrastructure.csproj" Id="2c12a00f-04c5-4a29-802f-65384cc874fa" />
 </Solution>
