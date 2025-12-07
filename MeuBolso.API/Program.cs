@@ -1,5 +1,8 @@
-
+using MeuBolso.Infrastructure.Data.DbContext;
+using MeuBolso.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeuBolso.API
 {
@@ -14,6 +17,24 @@ namespace MeuBolso.API
             {
                 config.ValidateScopes = true;
             });
+
+            builder.Services.AddDbContext<MeuBolsoDbContext>(opts =>
+                opts.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddRoles<IdentityRole>() // se usar roles
+            .AddEntityFrameworkStores<MeuBolsoDbContext>()
+            .AddDefaultTokenProviders()
+            .AddSignInManager()
+            .AddApiEndpoints();
 
             // Remove o cabecalho "Server" das respostas HTTP
             builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
