@@ -31,6 +31,8 @@ namespace MeuBolso.Infrastructure.Data.DbContext
             builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins", "auth");
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims", "auth");
             builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens", "auth");
+
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

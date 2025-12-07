@@ -21,8 +21,4 @@
     <ProjectReference Include="..\MeuBolso.Domain\MeuBolso.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mappings\" />
-  </ItemGroup>
-
 </Project>
