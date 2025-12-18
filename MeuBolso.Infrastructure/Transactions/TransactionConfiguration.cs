@@ -3,7 +3,7 @@ using MeuBolso.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MeuBolso.Infrastructure.Mappings
+namespace MeuBolso.Infrastructure.Categories
 {
     public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
     {
