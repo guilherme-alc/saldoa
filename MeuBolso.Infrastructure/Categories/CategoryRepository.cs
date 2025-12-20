@@ -1,7 +1,7 @@
 using MeuBolso.Application.Categories.Abstractions;
 using MeuBolso.Application.Common.Pagination;
 using MeuBolso.Domain.Entities;
-using MeuBolso.Infrastructure.Data.DbContext;
+using MeuBolso.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeuBolso.Infrastructure.Categories;

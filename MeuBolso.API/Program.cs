@@ -1,5 +1,5 @@
-using MeuBolso.Infrastructure.Data.DbContext;
 using MeuBolso.Infrastructure.Identity;
+using MeuBolso.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

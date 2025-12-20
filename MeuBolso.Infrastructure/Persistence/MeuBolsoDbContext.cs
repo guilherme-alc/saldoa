@@ -1,11 +1,11 @@
-﻿using MeuBolso.Domain.Entities;
+﻿using System.Reflection;
+using MeuBolso.Domain.Entities;
 using MeuBolso.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
-namespace MeuBolso.Infrastructure.Data.DbContext
+namespace MeuBolso.Infrastructure.Persistence
 {
     public class MeuBolsoDbContext : IdentityDbContext<ApplicationUser>
     {
