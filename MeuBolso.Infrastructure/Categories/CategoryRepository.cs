@@ -18,15 +18,9 @@ public class CategoryRepository : ICategoryRepository
         await _dbContext.Categories.AddAsync(category);
     }
 
-    public async Task SaveAsync()
-    {
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task RemoveAsync(Category category)
+    public void RemoveAsync(Category category)
     {
         _dbContext.Categories.Remove(category);
-        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<Category?> GetByIdAsync(long id, string userId)

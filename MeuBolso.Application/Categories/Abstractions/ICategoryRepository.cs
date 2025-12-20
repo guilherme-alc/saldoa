@@ -6,8 +6,7 @@ namespace MeuBolso.Application.Categories.Abstractions;
 public interface ICategoryRepository
 {
     Task AddAsync(Category category);
-    Task SaveAsync();
-    Task RemoveAsync(Category category);
+    void RemoveAsync(Category category);
     Task<Category?> GetByIdAsync(long id, string userId);
     Task<Category?> GetByIdForUpdateAsync(long id, string userId);
     Task<PagedResult<Category>> ListAsync(int pageNumber, int pageSize, string userId);

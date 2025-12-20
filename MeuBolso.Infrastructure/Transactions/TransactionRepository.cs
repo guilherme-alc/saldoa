@@ -19,15 +19,9 @@ public class TransactionRepository : ITransactionRepository
         await _dbContext.Transactions.AddAsync(transaction);
     }
 
-    public async Task UpdateAsync(Transaction transaction)
-    {
-        _dbContext.Transactions.Update(transaction);
-    }
-
-    public async Task RemoveAsync(Transaction transaction)
+    public void RemoveAsync(Transaction transaction)
     {
         _dbContext.Transactions.Remove(transaction);
-        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<Transaction?> GetByIdAsync(long id, string userId)
@@ -48,7 +42,9 @@ public class TransactionRepository : ITransactionRepository
         var query = _dbContext
             .Transactions
             .AsNoTracking()
-            .Where(t => t.UserId == userId);
+            .Where(t => t.UserId == userId &&
+                        t.PaymentOrReceivedAt >= startDate &&
+                        t.PaymentOrReceivedAt <= endDate);
         
         var total = await query.CountAsync();
 
