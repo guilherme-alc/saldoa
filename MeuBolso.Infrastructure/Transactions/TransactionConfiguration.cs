@@ -53,6 +53,11 @@ namespace MeuBolso.Infrastructure.Transactions
                .WithMany()
                .HasForeignKey(t => t.UserId)
                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasOne(t => t.Category)
+                .WithMany()
+                .HasForeignKey(t => t.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
