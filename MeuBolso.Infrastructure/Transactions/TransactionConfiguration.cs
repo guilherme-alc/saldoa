@@ -12,6 +12,9 @@ namespace MeuBolso.Infrastructure.Transactions
             builder.ToTable("transactions", "app");
 
             builder.HasKey(t => t.Id);
+            
+            builder.Property(t => t.Id)
+                .HasColumnName("id");
 
             builder.Property(t => t.Title)
                 .HasColumnName("title")
@@ -40,8 +43,8 @@ namespace MeuBolso.Infrastructure.Transactions
                 .HasDefaultValueSql("now()")
                 .IsRequired();
 
-            builder.Property(t => t.PaymentOrReceivedAt)
-                .HasColumnName("payment_or_received_at")
+            builder.Property(t => t.PaidOrReceivedAt)
+                .HasColumnName("paid_or_received_at")
                 .HasColumnType("timestamp without time zone")
                 .IsRequired(false);
                 
@@ -52,12 +55,21 @@ namespace MeuBolso.Infrastructure.Transactions
             builder.HasOne<ApplicationUser>()
                .WithMany()
                .HasForeignKey(t => t.UserId)
+               .HasConstraintName("fk_transactions_user")
                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Property(t => t.CategoryId)
+                .HasColumnName("category_id")
+                .IsRequired();
             
             builder.HasOne(t => t.Category)
                 .WithMany()
                 .HasForeignKey(t => t.CategoryId)
+                .HasConstraintName("fk_transactions_category")
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasIndex(t => t.UserId)
+                .HasDatabaseName("ix_transactions_user");
         }
     }
 }

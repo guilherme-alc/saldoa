@@ -10,8 +10,11 @@ namespace MeuBolso.Infrastructure.Categories
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.ToTable("categories", "app");
-            
+
             builder.HasKey(c => c.Id);
+            
+            builder.Property(c => c.Id)
+                .HasColumnName("id");
 
             builder.Property(c => c.Name)
                 .HasColumnName("name")
@@ -35,7 +38,12 @@ namespace MeuBolso.Infrastructure.Categories
             builder.HasOne<ApplicationUser>()
                .WithMany()
                .HasForeignKey(c => c.UserId)
+               .HasConstraintName("fk_categories_user")
                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasIndex(c => new { c.UserId, c.Name })
+                .IsUnique()
+                .HasDatabaseName("ux_categories_user_name");
         }
     }
 }

@@ -43,13 +43,13 @@ public class TransactionRepository : ITransactionRepository
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
-                        t.PaymentOrReceivedAt >= startDate &&
-                        t.PaymentOrReceivedAt <= endDate);
+                        t.PaidOrReceivedAt >= startDate &&
+                        t.PaidOrReceivedAt <= endDate);
         
         var total = await query.CountAsync();
 
         var data = await query
-            .OrderByDescending(t => t.PaymentOrReceivedAt)
+            .OrderByDescending(t => t.PaidOrReceivedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
