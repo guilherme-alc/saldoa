@@ -1,4 +1,4 @@
-using MeuBolso.Application.Common.Requests;
+using MeuBolso.Application.Common.Security;
 
 namespace MeuBolso.Application.Categories.Create;
 

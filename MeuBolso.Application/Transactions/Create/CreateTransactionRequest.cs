@@ -1,4 +1,4 @@
-using MeuBolso.Application.Common.Requests;
+using MeuBolso.Application.Common.Security;
 using MeuBolso.Domain.Enums;
 
 namespace MeuBolso.Application.Transactions.Create;

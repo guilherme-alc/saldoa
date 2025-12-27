@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MeuBolso.Application.Common.Requests;
+namespace MeuBolso.Application.Common.Security;
 
 public class AuthenticatedRequest
 {
