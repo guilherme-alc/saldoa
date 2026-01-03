@@ -1,10 +1,9 @@
 using MeuBolso.Application.Common.Pagination;
 using MeuBolso.Application.Transactions.Abstractions;
 using MeuBolso.Domain.Entities;
-using MeuBolso.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace MeuBolso.Infrastructure.Transactions;
+namespace MeuBolso.API.Persistence.Repositories;
 
 public class TransactionRepository : ITransactionRepository
 {

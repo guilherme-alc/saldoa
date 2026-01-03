@@ -1,9 +1,9 @@
-﻿using MeuBolso.Domain.Entities;
-using MeuBolso.Infrastructure.Identity;
+﻿using MeuBolso.API.Identity;
+using MeuBolso.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MeuBolso.Infrastructure.Transactions
+namespace MeuBolso.API.Persistence.Configurations
 {
     public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
     {
