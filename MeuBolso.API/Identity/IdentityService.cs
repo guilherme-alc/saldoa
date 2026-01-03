@@ -40,15 +40,18 @@ internal sealed class IdentityService : IIdentityService
         return user.Id;
     }
 
-    public async Task<bool> ValidateCredentialsAsync(string email, string password)
+    public async Task<string?> ValidateCredentialsAndGetUserIdAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null)
-            return false;
-
+            return null;
+        
+        if (!user.IsActive) 
+            return null;
+        
         var result = await _signInManager
             .CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
 
-        return result.Succeeded;
+        return result.Succeeded ? user.Id : null;
     }
 }

@@ -1,3 +1,4 @@
+using FluentValidation;
 using MeuBolso.Application.Auth.AuthDTO;
 using MeuBolso.Application.Auth.Login;
 
@@ -9,12 +10,19 @@ public class LoginEndpoint
     {
         group.MapPost("/login", async (
             LoginRequest request,
+            IValidator<LoginRequest> validator,
             LoginUseCase useCase) =>
         {
+            var validation = await validator.ValidateAsync(request);
+            if (!validation.IsValid)
+                return Results.BadRequest(validation.Errors);
             
             var result = await useCase.ExecuteAsync(request);
             
-            return !result.IsSuccess ? Results.BadRequest(result.Error) : Results.Created("/auth/register", result.Value);
+            if (!result.IsSuccess)
+                return Results.Json(new { message = "Acesso inválido" }, statusCode: 401);
+            
+            return Results.Ok(result.Value);
         });
     }
 }

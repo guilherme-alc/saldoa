@@ -36,14 +36,13 @@ namespace MeuBolso.API
             builder.Services.AddDbContext<MeuBolsoDbContext>(opts =>
                 opts.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
-            builder.Services.AddScoped<CreateCategoryUseCase>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<LoginUseCase>();
-            builder.Services.AddScoped<RegisterUseCase>();
-            builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
+            builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+            builder.Services.AddScoped<LoginUseCase>();
+            builder.Services.AddScoped<RegisterUseCase>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<CreateCategoryUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));

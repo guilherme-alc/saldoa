@@ -18,15 +18,14 @@ public class LoginUseCase
     
     public async Task<Result<AuthResponse>> ExecuteAsync(LoginRequest request)
     {
-        var valid = await _identityService
-            .ValidateCredentialsAsync(request.Email, request.Password);
-
+        var userId = await _identityService
+            .ValidateCredentialsAndGetUserIdAsync(request.Email, request.Password);
        
-        if (!valid)
-            return Result<AuthResponse>.Failure("Usuário não cadastrado");
+        if (userId is null)
+            return Result<AuthResponse>.Failure("Acesso inválido");
 
         var accessToken = _jwtProvider.GenerateToken(
-            userId: request.Email,
+            userId: userId,
             email: request.Email,
             claims: []);
 
