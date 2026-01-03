@@ -1,14 +1,23 @@
+using System.Text;
 using FluentValidation;
+using MeuBolso.API.Auth;
+using MeuBolso.API.Endpoints.Auth;
+using MeuBolso.API.Endpoints.Categories;
+using MeuBolso.API.Identity;
 using MeuBolso.API.Middlewares;
+using MeuBolso.API.Persistence;
+using MeuBolso.Application.Auth.Abstractions;
+using MeuBolso.Application.Auth.Login;
+using MeuBolso.Application.Auth.Register;
 using MeuBolso.Application.Categories.Abstractions;
 using MeuBolso.Application.Categories.Create;
-using MeuBolso.Application.Common.Abstractions;
+using MeuBolso.Application.Identity.Abstractions;
 using MeuBolso.Infrastructure.Categories;
-using MeuBolso.Infrastructure.Identity;
-using MeuBolso.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MeuBolso.API
 {
@@ -24,15 +33,45 @@ namespace MeuBolso.API
                 config.ValidateScopes = true;
             });
             
+            builder.Services.AddDbContext<MeuBolsoDbContext>(opts =>
+                opts.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
             builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
             builder.Services.AddScoped<CreateCategoryUseCase>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
-            builder.Services.AddDbContext<MeuBolsoDbContext>(opts =>
-                opts.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped<LoginUseCase>();
+            builder.Services.AddScoped<RegisterUseCase>();
+            builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+            builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+            builder.Services.AddScoped<IIdentityService, IdentityService>();
 
-            builder.Services.AddAuthentication();
+            builder.Services.Configure<JwtOptions>(
+                builder.Configuration.GetSection(JwtOptions.SectionName));
+            
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var jwt = builder.Configuration
+                        .GetSection(JwtOptions.SectionName)
+                        .Get<JwtOptions>()!;
+            
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwt.Issuer,
+            
+                        ValidateAudience = true,
+                        ValidAudience = jwt.Audience,
+            
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwt.Secret)),
+            
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
             
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
@@ -46,28 +85,22 @@ namespace MeuBolso.API
             .AddRoles<IdentityRole>() // se usar roles
             .AddEntityFrameworkStores<MeuBolsoDbContext>()
             .AddDefaultTokenProviders()
-            .AddSignInManager()
-            .AddApiEndpoints();
-
+            .AddSignInManager<SignInManager<ApplicationUser>>();
+            
             // Remove o cabecalho "Server" das respostas HTTP
             builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 
-            // Fallback policy para exigir autenticacaoo em todas as rotas por padrao
+            // Fallback policy para exigir autenticação em todas as rotas por padrao
             builder.Services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
             });
-
-            builder.Services.AddOpenApi();
+            
+            builder.Services.AddEndpointsApiExplorer();
 
             var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
 
             app.UseHttpsRedirection();
 
@@ -90,6 +123,9 @@ namespace MeuBolso.API
             
             app.UseAuthentication();
             app.UseAuthorization();
+            
+            app.MapAuthEndpoints();
+            app.MapCategoriesEndpoint();
 
             app.Run();
         }
