@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using MeuBolso.API.Identity;
 using MeuBolso.Domain.Entities;
+using MeuBolso.Domain.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

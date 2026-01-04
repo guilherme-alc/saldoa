@@ -1,4 +1,4 @@
-using MeuBolso.Domain.Entities;
+using MeuBolso.Domain.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,8 +15,8 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.Id)
             .HasColumnName("id");
 
-        builder.Property(rt => rt.Token)
-            .HasColumnName("token")
+        builder.Property(rt => rt.TokenHash)
+            .HasColumnName("token_hash")
             .IsRequired();
 
         builder.Property(rt => rt.UserId)
@@ -26,16 +26,18 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.ExpiresAt)
             .HasColumnName("expires_at")
             .IsRequired();
+        
+        builder.Property(x => x.RevokedAt)
+            .HasColumnName("revoked_at");
 
-        builder.Property(rt => rt.IsRevoked)
-            .HasColumnName("is_revoked")
-            .IsRequired();
+        builder.Property(x => x.ReplacedByTokenHash)
+            .HasColumnName("replaced_by_token_hash");
         
-        builder.Ignore(rt => rt.IsExpired);
+        builder.Ignore(x => x.IsExpired);
+        builder.Ignore(x => x.IsRevoked);
         
-        builder.HasIndex(rt => rt.Token)
+        builder.HasIndex(rt => rt.TokenHash)
             .IsUnique();
-
         builder.HasIndex(rt => rt.UserId);
     }
 }
