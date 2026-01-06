@@ -59,4 +59,11 @@ internal sealed class IdentityService : IIdentityService
         
         return user.Id;
     }
+    
+    public async Task<string?> GetEmailByUserIdAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        return user?.Email;
+    }
+
 }
