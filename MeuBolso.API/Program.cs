@@ -6,6 +6,7 @@ using MeuBolso.API.Endpoints.Categories;
 using MeuBolso.API.Identity;
 using MeuBolso.API.Middlewares;
 using MeuBolso.API.Persistence;
+using MeuBolso.API.Persistence.Repositories;
 using MeuBolso.Application.Auth.Abstractions;
 using MeuBolso.Application.Auth.Login;
 using MeuBolso.Application.Auth.Logout;
@@ -13,8 +14,8 @@ using MeuBolso.Application.Auth.Refresh;
 using MeuBolso.Application.Auth.Register;
 using MeuBolso.Application.Categories.Abstractions;
 using MeuBolso.Application.Categories.Create;
+using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
-using MeuBolso.Infrastructure.Categories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -71,6 +72,7 @@ namespace MeuBolso.API
             builder.Services.AddDbContext<MeuBolsoDbContext>(opts =>
                 opts.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
             builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
