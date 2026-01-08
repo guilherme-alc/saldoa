@@ -10,13 +10,14 @@ public static class RegisterEndpoint
         group.MapPost("/register", async (
             RegisterRequest request,
             IValidator<RegisterRequest> validator,
-            RegisterUseCase useCase) =>
+            RegisterUseCase useCase,
+            CancellationToken ct) =>
         {
             var validation = await validator.ValidateAsync(request);
             if (!validation.IsValid)
                 return Results.BadRequest(validation.Errors);
             
-            var result = await useCase.ExecuteAsync(request);
+            var result = await useCase.ExecuteAsync(request, ct);
             
             return !result.IsSuccess ? Results.BadRequest(result.Error) : Results.Created("/auth/register", result.Value);
         });

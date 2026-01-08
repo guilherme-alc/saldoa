@@ -14,4 +14,16 @@
     <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Common\Abstractions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Common\Abstractions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Common\Abstractions\**" />
+  </ItemGroup>
+
 </Project>

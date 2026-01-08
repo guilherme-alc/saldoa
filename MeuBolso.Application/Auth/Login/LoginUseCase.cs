@@ -25,10 +25,10 @@ public class LoginUseCase
         _refreshTokenService = refreshTokenService;
     }
     
-    public async Task<Result<AuthResponse>> ExecuteAsync(LoginRequest request)
+    public async Task<Result<AuthResponse>> ExecuteAsync(LoginRequest request, CancellationToken ct)
     {
         var userId = await _identityService
-            .ValidateCredentialsAndGetUserIdAsync(request.Email, request.Password);
+            .ValidateCredentialsAndGetUserIdAsync(request.Email, request.Password, ct);
        
         if (userId is null)
             return Result<AuthResponse>.Failure("Acesso inválido");
@@ -41,8 +41,8 @@ public class LoginUseCase
         var refreshToken = _refreshTokenService.Generate();
         
         var entity = new RefreshToken(refreshToken.TokenHash, userId, refreshToken.ExpiresAt);
-        await _refreshRepo.AddAsync(entity);
-        await _refreshRepo.SaveChangesAsync();
+        await _refreshRepo.AddAsync(entity, ct);
+        await _refreshRepo.SaveChangesAsync(ct);
         
         return Result<AuthResponse>.Success(
             new AuthResponse(

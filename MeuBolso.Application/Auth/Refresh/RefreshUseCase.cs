@@ -25,15 +25,15 @@ public sealed class RefreshUseCase
         _refreshTokenService = refreshTokenService;
     }
 
-    public async Task<Result<AuthResponse>> ExecuteAsync(string refreshTokenRaw)
+    public async Task<Result<AuthResponse>> ExecuteAsync(string refreshTokenRaw, CancellationToken ct)
     {
         var hash = RefreshTokenCrypto.HashToken(refreshTokenRaw);
-        var stored = await _refreshRepo.GetByHashAsync(hash);
+        var stored = await _refreshRepo.GetByHashAsync(hash, ct);
 
         if (stored is null || stored.IsExpired || stored.IsRevoked)
             return Result<AuthResponse>.Failure("Acesso inválido");
 
-        var email = await _identityService.GetEmailByUserIdAsync(stored.UserId);
+        var email = await _identityService.GetEmailByUserIdAsync(stored.UserId, ct);
         if (email is null)
             return Result<AuthResponse>.Failure("Acesso inválido");
         
@@ -41,8 +41,8 @@ public sealed class RefreshUseCase
         stored.Revoke(replacedByTokenHash: newRefresh.TokenHash);
 
         var newEntity = new RefreshToken(newRefresh.TokenHash, stored.UserId, newRefresh.ExpiresAt);
-        await _refreshRepo.AddAsync(newEntity);
-        await _refreshRepo.SaveChangesAsync();
+        await _refreshRepo.AddAsync(newEntity, ct);
+        await _refreshRepo.SaveChangesAsync(ct);
 
         var newAccessResult = _jwtProvider.GenerateToken(
             userId: stored.UserId,

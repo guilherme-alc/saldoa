@@ -10,13 +10,14 @@ public class LoginEndpoint
         group.MapPost("/login", async (
             LoginRequest request,
             IValidator<LoginRequest> validator,
-            LoginUseCase useCase) =>
+            LoginUseCase useCase,
+            CancellationToken ct) =>
         {
             var validation = await validator.ValidateAsync(request);
             if (!validation.IsValid)
                 return Results.BadRequest(validation.Errors);
             
-            var result = await useCase.ExecuteAsync(request);
+            var result = await useCase.ExecuteAsync(request, ct);
             
             if (!result.IsSuccess)
                 return Results.Json(new { message = "Acesso inválido" }, statusCode: 401);

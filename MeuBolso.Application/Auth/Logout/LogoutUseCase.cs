@@ -10,10 +10,10 @@ public sealed class LogoutUseCase
     public LogoutUseCase(IRefreshTokenRepository refreshRepo)
         => _refreshRepo = refreshRepo;
 
-    public async Task<Result> ExecuteAsync(string refreshTokenRaw)
+    public async Task<Result> ExecuteAsync(string refreshTokenRaw, CancellationToken ct)
     {
         var hash = RefreshTokenCrypto.HashToken(refreshTokenRaw);
-        var stored = await _refreshRepo.GetByHashAsync(hash);
+        var stored = await _refreshRepo.GetByHashAsync(hash, ct);
         
         if (stored is null)
             return Result.Success();
@@ -21,7 +21,7 @@ public sealed class LogoutUseCase
         if (!stored.IsRevoked)
         {
             stored.Revoke();
-            await _refreshRepo.SaveChangesAsync();
+            await _refreshRepo.SaveChangesAsync(ct);
         }
 
         return Result.Success();
