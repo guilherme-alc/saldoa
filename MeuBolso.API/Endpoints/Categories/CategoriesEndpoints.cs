@@ -9,5 +9,6 @@ public static class CategoriesEndpoints
             .WithTags("Categories");
 
         CreateCategoryEndpoint.Map(group);
+        UpdateCategoryEndpoint.Map(group);
     }
 }

@@ -14,6 +14,7 @@ using MeuBolso.Application.Auth.Refresh;
 using MeuBolso.Application.Auth.Register;
 using MeuBolso.Application.Categories.Abstractions;
 using MeuBolso.Application.Categories.Create;
+using MeuBolso.Application.Categories.Update;
 using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,6 +85,7 @@ namespace MeuBolso.API
             builder.Services.AddScoped<LogoutUseCase>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<CreateCategoryUseCase>();
+            builder.Services.AddScoped<UpdateCategoryUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));
