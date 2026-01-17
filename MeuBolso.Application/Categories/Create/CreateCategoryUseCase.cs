@@ -16,12 +16,12 @@ public class CreateCategoryUseCase
         _unit = unit;
     }
 
-    public async Task<Result<CreateCategoryResponse>> ExecuteAsync(CreateCategoryRequest request, CancellationToken ct)
+    public async Task<Result<CreateCategoryResponse>> ExecuteAsync(CreateCategoryRequest request, string userId, CancellationToken ct)
     {
-        if (await _categoryRepository.ExistsAsync(request.UserId, request.Name, ct))
+        if (await _categoryRepository.ExistsAsync(userId, request.Name, ct))
             return Result<CreateCategoryResponse>.Failure($"A Categoria {request.Name} já existe");
 
-        var category = new Category(request.UserId, request.Name, request.Description, request.Color);
+        var category = new Category(userId, request.Name, request.Description, request.Color);
     
         await _categoryRepository.AddAsync(category, ct);
         await _unit.SaveChangesAsync(ct);

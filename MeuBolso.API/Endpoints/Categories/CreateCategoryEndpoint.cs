@@ -2,7 +2,6 @@ using System.Security.Claims;
 using FluentValidation;
 using MeuBolso.API.Extensions;
 using MeuBolso.Application.Categories.Create;
-using MeuBolso.Application.Common.Results;
 
 namespace MeuBolso.API.Endpoints.Categories;
 
@@ -23,9 +22,7 @@ public static class CreateCategoryEndpoint
             
             var userId = user.GetUserId();
 
-            request.UserId = userId;
-
-            var result = await useCase.ExecuteAsync(request, ct);
+            var result = await useCase.ExecuteAsync(request, userId, ct);
             
             if (!result.IsSuccess)
                 return Results.Conflict(new { error = result.Error });

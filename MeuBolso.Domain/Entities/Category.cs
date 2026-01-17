@@ -5,18 +5,20 @@
         private Category() { }
         public Category(string userId, string name, string? description, string? color)
         {
-            UserId = userId;
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("Usuário inválido.", nameof(userId));
             SetName(name);
             SetDescription(description);
             SetColor(color);
+            UserId = userId;
         }
 
         public long Id { get; private set; }
-        public string Name { get; private set; }
-        public string NormalizedName { get; private set; }
+        public string Name { get; private set; } = null!;
+        public string NormalizedName { get; private set; } = null!;
         public string? Description { get; private set; }
         public string? Color { get; private set; }
-        public string UserId { get; private set; } = string.Empty;
+        public string UserId { get; private set; } = null!;
         
         public void SetName(string name)
         {
@@ -27,8 +29,16 @@
             NormalizedName = Name.ToUpperInvariant();
         }
 
-        public void SetDescription(string? description) => Description = description?.Trim();
-        public void SetColor(string? color) => Color = color?.Trim();
+        public void SetDescription(string? description)
+        {
+            var d = description?.Trim();
+            Description = string.IsNullOrWhiteSpace(d) ? null : d;
+        }
         
+        public void SetColor(string? color)
+        {
+            var c = color?.Trim();
+            Color = string.IsNullOrWhiteSpace(c) ? null : c;
+        }
     }
 }
