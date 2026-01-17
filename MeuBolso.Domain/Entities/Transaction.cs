@@ -4,15 +4,52 @@ namespace MeuBolso.Domain.Entities
 {
     public class Transaction
     {
-        public long Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public ETransactionType Type { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime? PaidOrReceivedAt { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public long CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
-        public string UserId { get; set; } = string.Empty;
+        private Transaction() { }
+        public Transaction(
+            string userId,
+            string title, 
+            string? description, 
+            ETransactionType type, 
+            decimal amount, 
+            DateTime? paidOrReceivedAt,
+            long categoryId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("Usuário inválido.", nameof(userId));
+            UserId = userId;
+            SetTitle(title);
+            SetDescription(description);
+            Type = type;
+            SetAmount(amount);
+            PaidOrReceivedAt = paidOrReceivedAt;
+            CreatedAt = DateTime.UtcNow;
+            CategoryId = categoryId;
+        }
+        public long Id { get; private set; }
+        public string Title { get; private set; }= null!;
+        public string? Description { get; private set; }
+        public ETransactionType Type { get; private set; }
+        public decimal Amount { get; private set; }
+        public DateTime? PaidOrReceivedAt { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public long CategoryId { get; private set; }
+        public Category Category { get; private set; } = null!;
+        public string UserId { get; private set; } = null!;
+        
+        public void SetTitle(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                throw new ArgumentException("Título da transação é obrigatório.", nameof(title));
+
+            Title = title.Trim();
+        }
+        
+        public void SetDescription(string? description)
+        {
+            var d = description?.Trim();
+            Description = string.IsNullOrWhiteSpace(d) ? null : d;
+        }
+        
+        public void SetAmount(decimal amount) => Amount = Math.Abs(amount);
     }
 }
