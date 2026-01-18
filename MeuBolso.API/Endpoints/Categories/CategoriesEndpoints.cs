@@ -10,5 +10,6 @@ public static class CategoriesEndpoints
 
         CreateCategoryEndpoint.Map(group);
         UpdateCategoryEndpoint.Map(group);
+        GetCategoryByIdEndpoint.Map(group);
     }
 }
