@@ -12,5 +12,6 @@ public static class CategoriesEndpoints
         UpdateCategoryEndpoint.Map(group);
         GetCategoryByIdEndpoint.Map(group);
         DeleteCategoryEndpoint.Map(group);
+        ListCategoriesEndpoint.Map(group);
     }
 }

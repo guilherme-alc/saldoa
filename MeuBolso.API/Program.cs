@@ -16,6 +16,7 @@ using MeuBolso.Application.Categories.Abstractions;
 using MeuBolso.Application.Categories.Create;
 using MeuBolso.Application.Categories.Delete;
 using MeuBolso.Application.Categories.GetById;
+using MeuBolso.Application.Categories.List;
 using MeuBolso.Application.Categories.Update;
 using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
@@ -90,6 +91,7 @@ namespace MeuBolso.API
             builder.Services.AddScoped<UpdateCategoryUseCase>();
             builder.Services.AddScoped<GetCategoryByIdUseCase>();
             builder.Services.AddScoped<DeleteCategoryUseCase>();
+            builder.Services.AddScoped<ListCategoriesUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));
