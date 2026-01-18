@@ -22,6 +22,7 @@ namespace MeuBolso.API.Persistence.Configurations
                 .HasMaxLength(100);
             
             builder.Property(x => x.NormalizedName)
+                .HasColumnName("normalized_name")
                 .IsRequired()
                 .HasMaxLength(100);
 
@@ -39,12 +40,17 @@ namespace MeuBolso.API.Persistence.Configurations
                 .HasColumnName("user_id")
                 .IsRequired();
 
+            builder.Property(c => c.CreatedAt)
+                .HasColumnName("created_at")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
             builder.HasOne<ApplicationUser>()
                .WithMany()
                .HasForeignKey(c => c.UserId)
                .HasConstraintName("fk_categories_user")
                .OnDelete(DeleteBehavior.Cascade);
-            
+
             builder.HasIndex(c => new { c.UserId, c.NormalizedName })
                 .IsUnique()
                 .HasDatabaseName("ux_categories_user_normalized_name");

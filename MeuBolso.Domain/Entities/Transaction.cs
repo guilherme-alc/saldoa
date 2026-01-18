@@ -22,7 +22,7 @@ namespace MeuBolso.Domain.Entities
             Type = type;
             SetAmount(amount);
             PaidOrReceivedAt = paidOrReceivedAt;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTimeOffset.UtcNow;
             CategoryId = categoryId;
         }
         public long Id { get; private set; }
@@ -30,8 +30,8 @@ namespace MeuBolso.Domain.Entities
         public string? Description { get; private set; }
         public ETransactionType Type { get; private set; }
         public decimal Amount { get; private set; }
-        public DateTime? PaidOrReceivedAt { get; private set; }
-        public DateTime CreatedAt { get; private set; }
+        public DateTimeOffset? PaidOrReceivedAt { get; private set; }
+        public DateTimeOffset CreatedAt { get; private set; }
         public long CategoryId { get; private set; }
         public Category Category { get; private set; } = null!;
         public string UserId { get; private set; } = null!;

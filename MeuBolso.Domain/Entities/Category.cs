@@ -11,6 +11,7 @@
             SetDescription(description);
             SetColor(color);
             UserId = userId;
+            CreatedAt = DateTimeOffset.UtcNow;
         }
 
         public long Id { get; private set; }
@@ -19,6 +20,7 @@
         public string? Description { get; private set; }
         public string? Color { get; private set; }
         public string UserId { get; private set; } = null!;
+        public DateTimeOffset CreatedAt { get; private set; }
         
         public void SetName(string name)
         {

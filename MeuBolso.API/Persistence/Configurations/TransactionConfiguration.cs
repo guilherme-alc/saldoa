@@ -39,14 +39,12 @@ namespace MeuBolso.API.Persistence.Configurations
 
             builder.Property(t => t.CreatedAt)
                 .HasColumnName("created_at")
-                .HasColumnType("timestamp without time zone")
-                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
             builder.Property(t => t.PaidOrReceivedAt)
                 .HasColumnName("paid_or_received_at")
-                .HasColumnType("timestamp without time zone")
-                .IsRequired(false);
+                .HasColumnType("timestamp with time zone");
                 
             builder.Property(t => t.UserId)
                 .HasColumnName("user_id")
