@@ -3,7 +3,7 @@ using MeuBolso.Domain.Entities;
 
 namespace MeuBolso.Application.Categories.Update;
 
-public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
+public sealed class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 {
     public UpdateCategoryValidator()
     {

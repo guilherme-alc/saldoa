@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace MeuBolso.Application.Categories.Create;
 
-public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
+public sealed class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 {
     public CreateCategoryValidator()
     {
