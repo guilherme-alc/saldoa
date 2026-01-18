@@ -12,7 +12,7 @@ public class CategoryRepository(MeuBolsoDbContext dbContext) : ICategoryReposito
         await dbContext.Categories.AddAsync(category, ct);
     }
 
-    public void RemoveAsync(Category category)
+    public void Remove(Category category)
     {
         dbContext.Categories.Remove(category);
     }
@@ -56,12 +56,19 @@ public class CategoryRepository(MeuBolsoDbContext dbContext) : ICategoryReposito
         return new PagedResult<Category>(data, total, pageNumber, pageSize);
     }
 
-    public async Task<bool> ExistsAsync(string userId, string name, CancellationToken ct = default)
+    public Task<bool> ExistsAsync(string userId, string name, CancellationToken ct = default)
     {
         var nameNormalized = name.Trim().ToUpperInvariant();
         
-        return await dbContext.Categories.AnyAsync(
+        return dbContext.Categories.AnyAsync(
             c => c.UserId == userId && c.NormalizedName == nameNormalized,
+            ct);
+    }
+
+    public Task<bool> HasTransactionsAsync(long id, string userId, CancellationToken ct = default)
+    {
+        return dbContext.Transactions.AnyAsync(
+            t => t.CategoryId == id && t.UserId == userId,
             ct);
     }
 }
