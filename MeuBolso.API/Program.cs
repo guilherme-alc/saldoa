@@ -3,6 +3,7 @@ using FluentValidation;
 using MeuBolso.API.Auth;
 using MeuBolso.API.Endpoints.Auth;
 using MeuBolso.API.Endpoints.Categories;
+using MeuBolso.API.Endpoints.Transactions;
 using MeuBolso.API.Identity;
 using MeuBolso.API.Middlewares;
 using MeuBolso.API.Persistence;
@@ -20,6 +21,8 @@ using MeuBolso.Application.Categories.List;
 using MeuBolso.Application.Categories.Update;
 using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
+using MeuBolso.Application.Transactions.Abstractions;
+using MeuBolso.Application.Transactions.Create;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -92,6 +95,8 @@ namespace MeuBolso.API
             builder.Services.AddScoped<GetCategoryByIdUseCase>();
             builder.Services.AddScoped<DeleteCategoryUseCase>();
             builder.Services.AddScoped<ListCategoriesUseCase>();
+            builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+            builder.Services.AddScoped<CreateTransactionUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));
@@ -186,6 +191,7 @@ namespace MeuBolso.API
             
             app.MapAuthEndpoints();
             app.MapCategoriesEndpoint();
+            app.MapTransactionsEndpoint();
 
             app.Run();
         }
