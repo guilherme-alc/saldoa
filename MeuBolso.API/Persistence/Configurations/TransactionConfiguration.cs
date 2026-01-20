@@ -44,7 +44,7 @@ namespace MeuBolso.API.Persistence.Configurations
 
             builder.Property(t => t.PaidOrReceivedAt)
                 .HasColumnName("paid_or_received_at")
-                .HasColumnType("timestamp with time zone");
+                .HasColumnType("date");
                 
             builder.Property(t => t.UserId)
                 .HasColumnName("user_id")

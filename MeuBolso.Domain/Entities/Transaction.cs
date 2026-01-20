@@ -11,7 +11,7 @@ namespace MeuBolso.Domain.Entities
             string? description, 
             ETransactionType type, 
             decimal amount, 
-            DateTime? paidOrReceivedAt,
+            DateOnly? paidOrReceivedAt,
             long categoryId)
         {
             if (string.IsNullOrWhiteSpace(userId))
@@ -30,7 +30,7 @@ namespace MeuBolso.Domain.Entities
         public string? Description { get; private set; }
         public ETransactionType Type { get; private set; }
         public decimal Amount { get; private set; }
-        public DateTimeOffset? PaidOrReceivedAt { get; private set; }
+        public DateOnly? PaidOrReceivedAt { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
         public long CategoryId { get; private set; }
         public Category Category { get; private set; } = null!;

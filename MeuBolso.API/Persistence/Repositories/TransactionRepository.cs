@@ -13,45 +13,52 @@ public class TransactionRepository : ITransactionRepository
         _dbContext = dbContext;
     }
     
-    public async Task AddAsync(Transaction transaction)
+    public async Task AddAsync(Transaction transaction, CancellationToken ct = default)
     {
-        await _dbContext.Transactions.AddAsync(transaction);
+        await _dbContext.Transactions.AddAsync(transaction, ct);
     }
 
-    public void RemoveAsync(Transaction transaction)
+    public void Remove(Transaction transaction)
     {
         _dbContext.Transactions.Remove(transaction);
     }
 
-    public async Task<Transaction?> GetByIdAsync(long id, string userId)
+    public async Task<Transaction?> GetByIdAsync(long id, string userId, CancellationToken ct = default)
     {
         return await _dbContext.Transactions
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
 
-    public async Task<Transaction?> GetByIdForUpdateAsync(long id, string userId)
+    public async Task<Transaction?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct = default)
     {
         return await _dbContext.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
 
-    public async Task<PagedResult<Transaction>> ListByPeriodAsync(string userId, DateTime startDate, DateTime endDate, int pageNumber, int pageSize)
+    public async Task<PagedResult<Transaction>> ListByPeriodAsync(
+        string userId, 
+        DateOnly startDate, 
+        DateOnly endDate, 
+        int pageNumber, 
+        int pageSize, 
+        CancellationToken ct = default)
     {
         var query = _dbContext
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
+                        t.PaidOrReceivedAt.HasValue &&
                         t.PaidOrReceivedAt >= startDate &&
                         t.PaidOrReceivedAt <= endDate);
         
-        var total = await query.CountAsync();
+        var total = await query.CountAsync(ct);
 
         var data = await query
             .OrderByDescending(t => t.PaidOrReceivedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(ct);
         
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
