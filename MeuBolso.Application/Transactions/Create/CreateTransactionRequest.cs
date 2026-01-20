@@ -1,14 +1,5 @@
-using MeuBolso.Application.Common.Security;
 using MeuBolso.Domain.Enums;
 
 namespace MeuBolso.Application.Transactions.Create;
 
-public class CreateTransactionRequest : AuthenticatedRequest
-{
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public DateTime? PaidOrReceivedAt { get; set; }
-    public ETransactionType Type { get; set; }
-    public decimal Amount { get; set; }
-    public long CategoryId { get; set; }
-}
+public sealed record CreateTransactionRequest(string Title, string? Description, DateOnly? PaidOrReceivedAt, ETransactionType Type, decimal Amount, long CategoryId);
