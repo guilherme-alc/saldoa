@@ -17,7 +17,7 @@ namespace MeuBolso.Domain.Entities
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("Usuário inválido.", nameof(userId));
             UserId = userId;
-            SetTitle(title);
+            InitTitle(title);
             SetDescription(description);
             Type = type;
             SetAmount(amount);
@@ -36,20 +36,52 @@ namespace MeuBolso.Domain.Entities
         public Category Category { get; private set; } = null!;
         public string UserId { get; private set; } = null!;
         
-        public void SetTitle(string title)
+        public void InitTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Título da transação é obrigatório.", nameof(title));
+                throw new ArgumentException("Título é obrigatório.", nameof(title));
 
             Title = title.Trim();
+        }
+        public void SetTitle(string? title)
+        {
+            if (title is null) 
+                return;
+            var t = title.Trim();
+            if (string.IsNullOrWhiteSpace(t)) 
+                return;
+            Title = t;
         }
         
         public void SetDescription(string? description)
         {
+            if(description == null) 
+                return;
+            
             var d = description?.Trim();
             Description = string.IsNullOrWhiteSpace(d) ? null : d;
         }
-        
-        public void SetAmount(decimal amount) => Amount = Math.Abs(amount);
+
+        public void SetAmount(decimal? amount)
+        {
+            if(amount.HasValue)
+                Amount = Math.Abs(amount.Value);
+        }
+
+        public void SetPaidOrReceivedAt(DateOnly? paidOrReceivedAt)
+        {
+            if(paidOrReceivedAt.HasValue)
+                PaidOrReceivedAt = paidOrReceivedAt;
+        }
+
+        public void SetCategoryId(long? categoryId)
+        {
+            if(!categoryId.HasValue)
+                return;
+
+            if (categoryId.Value <= 0) 
+                throw new ArgumentOutOfRangeException(nameof(categoryId), "Categoria inválida.");
+            CategoryId = categoryId.Value;
+        }
     }
 }

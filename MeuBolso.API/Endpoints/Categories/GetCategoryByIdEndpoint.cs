@@ -19,7 +19,7 @@ public static class GetCategoryByIdEndpoint
             
             var result = await useCase.ExecuteAsync(id, userId, ct);
             
-            if (!result.IsSuccess)
+            if(!result.IsSuccess)
                 return Results.NotFound(new { error = result.Error });
             
             return Results.Ok(result.Value);
