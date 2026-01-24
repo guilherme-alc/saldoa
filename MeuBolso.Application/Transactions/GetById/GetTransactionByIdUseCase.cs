@@ -1,0 +1,37 @@
+using MeuBolso.Application.Categories.Abstractions;
+using MeuBolso.Application.Common.Results;
+using MeuBolso.Application.Transactions.Abstractions;
+using MeuBolso.Application.Transactions.Common;
+
+namespace MeuBolso.Application.Transactions.GetById;
+
+public class GetTransactionByIdUseCase
+{
+    private readonly ITransactionRepository _transactionRepository;
+
+    public GetTransactionByIdUseCase(ITransactionRepository transactionRepository)
+    {
+        _transactionRepository =  transactionRepository;
+    }
+    
+    public async Task<Result<TransactionResponse>> ExecuteAsync(long id, string userId, CancellationToken ct)
+    {
+        var transaction = await _transactionRepository.GetByIdWithCategoryAsync(id, userId, ct);
+
+        if (transaction is null)
+            return Result<TransactionResponse>.Failure("Transação não encontrada.");
+        
+        return Result<TransactionResponse>.Success(new TransactionResponse(
+            transaction.Id,
+            transaction.Title,
+            transaction.Description,
+            transaction.Type,
+            transaction.Amount,
+            transaction.PaidOrReceivedAt,
+            new CategorySummaryResponse(
+                transaction.Category.Id,
+                transaction.Category.Name,
+                transaction.Category.Color)
+        ));
+    }
+}

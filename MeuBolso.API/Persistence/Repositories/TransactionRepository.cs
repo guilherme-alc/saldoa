@@ -36,6 +36,15 @@ public class TransactionRepository : ITransactionRepository
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
 
+    public async Task<Transaction?> GetByIdWithCategoryAsync(long id, string userId, CancellationToken ct)
+    {
+        return await _dbContext.Transactions
+            .AsNoTracking()
+            .Include(t => t.Category)
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
+    }
+
+
     public async Task<PagedResult<Transaction>> ListByPeriodAsync(
         string userId, 
         DateOnly startDate, 
