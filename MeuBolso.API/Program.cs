@@ -23,6 +23,8 @@ using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
 using MeuBolso.Application.Transactions.Abstractions;
 using MeuBolso.Application.Transactions.Create;
+using MeuBolso.Application.Transactions.GetById;
+using MeuBolso.Application.Transactions.Update;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -97,6 +99,8 @@ namespace MeuBolso.API
             builder.Services.AddScoped<ListCategoriesUseCase>();
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
             builder.Services.AddScoped<CreateTransactionUseCase>();
+            builder.Services.AddScoped<GetTransactionByIdUseCase>();
+            builder.Services.AddScoped<UpdateTransactionUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));

@@ -9,5 +9,7 @@ public static class TransactionsEndpoints
             .WithTags("Transactions");
 
         CreateTransactionEndpoint.Map(group);
+        GetTransactionByIdEndpoint.Map(group);
+        UpdateTransactionEndpoint.Map(group);
     }
 }
