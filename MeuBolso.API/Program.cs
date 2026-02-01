@@ -23,6 +23,7 @@ using MeuBolso.Application.Common.Abstractions;
 using MeuBolso.Application.Identity.Abstractions;
 using MeuBolso.Application.Transactions.Abstractions;
 using MeuBolso.Application.Transactions.Create;
+using MeuBolso.Application.Transactions.Delete;
 using MeuBolso.Application.Transactions.GetById;
 using MeuBolso.Application.Transactions.Update;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,7 +40,7 @@ namespace MeuBolso.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
@@ -101,6 +102,7 @@ namespace MeuBolso.API
             builder.Services.AddScoped<CreateTransactionUseCase>();
             builder.Services.AddScoped<GetTransactionByIdUseCase>();
             builder.Services.AddScoped<UpdateTransactionUseCase>();
+            builder.Services.AddScoped<DeleteTransactionUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));
