@@ -1,6 +1,0 @@
-@MeuBolso.API_HostAddress = http://localhost:5220
-
-GET {{MeuBolso.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

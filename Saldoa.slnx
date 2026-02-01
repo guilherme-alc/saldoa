@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Saldoa.API\Saldoa.API.csproj" />
+  <Project Path="Saldoa.Application\Saldoa.Application.csproj" Id="2c12b0bc-1532-4b95-bd99-160e75f063a0" />
+  <Project Path="Saldoa.Domain\Saldoa.Domain.csproj" />
+</Solution>
