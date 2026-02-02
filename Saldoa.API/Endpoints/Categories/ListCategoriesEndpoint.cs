@@ -24,7 +24,6 @@ public static class ListCategoriesEndpoint
             
             var result = await useCase.ExecuteAsync(userId, request.PageNumber, request.PageSize, ct);
             
-            
             if (!result.IsSuccess)
                 return Results.BadRequest(new { error = result.Error });
             

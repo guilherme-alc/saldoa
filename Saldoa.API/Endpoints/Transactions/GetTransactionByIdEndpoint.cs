@@ -5,7 +5,7 @@ using Saldoa.Application.Transactions.GetById;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
-public class GetTransactionByIdEndpoint
+public static class GetTransactionByIdEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {

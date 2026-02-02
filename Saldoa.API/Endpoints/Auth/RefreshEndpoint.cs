@@ -2,7 +2,7 @@ using Saldoa.Application.Auth.Refresh;
 
 namespace Saldoa.API.Endpoints.Auth;
 
-public class RefreshEndpoint
+public static class RefreshEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {

@@ -4,7 +4,7 @@ using Saldoa.Application.Transactions.Delete;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
-public class DeleteTransactionEndpoint
+public static class DeleteTransactionEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {

@@ -3,7 +3,7 @@ using Saldoa.Application.Auth.Login;
 
 namespace Saldoa.API.Endpoints.Auth;
 
-public class LoginEndpoint
+public static class LoginEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {
