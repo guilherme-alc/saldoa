@@ -13,5 +13,6 @@ public static class TransactionsEndpoints
         UpdateTransactionEndpoint.Map(group);
         DeleteTransactionEndpoint.Map(group);
         ListTransactionsByPeriodEndpoint.Map(group);
+        ListTransactionsByMonthEndpoint.Map(group);
     }
 }
