@@ -24,10 +24,9 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionReq
 
         When(x => x.Type is not null, () =>
         {
-            RuleFor(x => x.Type!)
+            RuleFor(x => x.Type)
                 .IsInEnum()
-                .Must(x => x != 0)
-                .WithMessage("O tipo da transação é obrigatório");
+                .WithMessage("Tipo da transação inválido.");
         });
         
         When(x => x.Amount is not null, () =>

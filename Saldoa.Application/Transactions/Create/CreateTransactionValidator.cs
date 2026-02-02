@@ -20,8 +20,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
 
         RuleFor(x => x.Type)
             .IsInEnum()
-            .Must(x => x != 0)
-            .WithMessage("O tipo da transação é obrigatório");
+            .WithMessage("Tipo da transação inválido.");
 
         RuleFor(x => x.Amount)
             .GreaterThan(0)
