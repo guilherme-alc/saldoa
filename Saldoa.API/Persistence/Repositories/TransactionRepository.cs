@@ -2,6 +2,7 @@ using Saldoa.Application.Common.Pagination;
 using Saldoa.Application.Transactions.Abstractions;
 using Saldoa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Saldoa.Domain.Enums;
 
 namespace Saldoa.API.Persistence.Repositories;
 
@@ -49,6 +50,7 @@ public class TransactionRepository : ITransactionRepository
         string userId, 
         DateOnly startDate, 
         DateOnly endDate, 
+        ETransactionType? type,
         int pageNumber, 
         int pageSize, 
         CancellationToken ct = default)
@@ -58,12 +60,14 @@ public class TransactionRepository : ITransactionRepository
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
                         t.PaidOrReceivedAt.HasValue &&
-                        t.PaidOrReceivedAt >= startDate &&
-                        t.PaidOrReceivedAt <= endDate);
+                        t.PaidOrReceivedAt.Value >= startDate &&
+                        t.PaidOrReceivedAt.Value <= endDate &&
+                        (type == null || t.Type == type));
         
         var total = await query.CountAsync(ct);
 
         var data = await query
+            .Include(t => t.Category)
             .OrderByDescending(t => t.PaidOrReceivedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

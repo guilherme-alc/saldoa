@@ -32,6 +32,7 @@ using Saldoa.API.Identity;
 using Saldoa.API.Middlewares;
 using Saldoa.API.Persistence;
 using Saldoa.API.Persistence.Repositories;
+using Saldoa.Application.Transactions.ListByPeriod;
 
 namespace Saldoa.API
 {
@@ -103,6 +104,7 @@ namespace Saldoa.API
             builder.Services.AddScoped<GetTransactionByIdUseCase>();
             builder.Services.AddScoped<UpdateTransactionUseCase>();
             builder.Services.AddScoped<DeleteTransactionUseCase>();
+            builder.Services.AddScoped<ListTransactionsByPeriodUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));
