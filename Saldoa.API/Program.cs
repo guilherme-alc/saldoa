@@ -32,6 +32,7 @@ using Saldoa.API.Identity;
 using Saldoa.API.Middlewares;
 using Saldoa.API.Persistence;
 using Saldoa.API.Persistence.Repositories;
+using Saldoa.Application.Transactions.ListByCategory;
 using Saldoa.Application.Transactions.ListByMonth;
 using Saldoa.Application.Transactions.ListByPeriod;
 using Saldoa.Application.Transactions.ListPending;
@@ -109,6 +110,7 @@ namespace Saldoa.API
             builder.Services.AddScoped<ListTransactionsByPeriodUseCase>();
             builder.Services.AddScoped<ListTransactionsByMonthUseCase>();
             builder.Services.AddScoped<ListPendingTransactionsUseCase>();
+            builder.Services.AddScoped<ListTransactionsByCategoryUseCase>();
 
             builder.Services.Configure<JwtOptions>(
                 builder.Configuration.GetSection(JwtOptions.SectionName));

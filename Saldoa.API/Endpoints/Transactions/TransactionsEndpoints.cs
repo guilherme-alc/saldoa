@@ -15,5 +15,6 @@ public static class TransactionsEndpoints
         ListTransactionsByPeriodEndpoint.Map(group);
         ListTransactionsByMonthEndpoint.Map(group);
         ListPendingTransactionsEndpoint.Map(group);
+        ListTransactionsByCategoryEndpoint.Map(group);
     }
 }

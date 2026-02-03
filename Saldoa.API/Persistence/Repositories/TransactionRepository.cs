@@ -9,6 +9,8 @@ namespace Saldoa.API.Persistence.Repositories;
 public class TransactionRepository : ITransactionRepository
 {
     private readonly SaldoaDbContext _dbContext;
+    private ITransactionRepository _transactionRepositoryImplementation;
+
     public TransactionRepository(SaldoaDbContext dbContext)
     {
         _dbContext = dbContext;
@@ -90,6 +92,29 @@ public class TransactionRepository : ITransactionRepository
         var data = await query
             .Include(t => t.Category)
             .OrderByDescending(t => t.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+        
+        return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
+    }
+
+    public async Task<PagedResult<Transaction>> ListByCategoryAsync(string userId, DateOnly startDate, DateOnly endDate, long categoryId, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        var query = _dbContext
+            .Transactions
+            .AsNoTracking()
+            .Where(t => t.UserId == userId &&
+                        t.PaidOrReceivedAt.HasValue &&
+                        t.PaidOrReceivedAt.Value >= startDate &&
+                        t.PaidOrReceivedAt.Value <= endDate &&
+                        t.CategoryId == categoryId);
+        
+        var total = await query.CountAsync(ct);
+
+        var data = await query
+            .Include(t => t.Category)
+            .OrderByDescending(t => t.PaidOrReceivedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
