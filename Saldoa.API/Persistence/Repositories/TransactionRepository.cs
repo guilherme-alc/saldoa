@@ -75,4 +75,25 @@ public class TransactionRepository : ITransactionRepository
         
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
+
+    public async Task<PagedResult<Transaction>> ListPendingAsync(string userId, ETransactionType? type, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        var query = _dbContext
+            .Transactions
+            .AsNoTracking()
+            .Where(t => t.UserId == userId &&
+                        t.PaidOrReceivedAt == null &&
+                        (type == null || t.Type == type));
+        
+        var total = await query.CountAsync(ct);
+
+        var data = await query
+            .Include(t => t.Category)
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+        
+        return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
+    }
 }
