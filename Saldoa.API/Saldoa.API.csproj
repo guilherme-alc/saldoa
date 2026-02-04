@@ -25,9 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Saldoa.Application\Saldoa.Application.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Persistence\Migrations\" />
-  </ItemGroup>
-
 </Project>

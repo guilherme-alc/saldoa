@@ -1,7 +1,7 @@
 using Saldoa.Application.Auth.Abstractions;
 using Saldoa.Domain.Auth;
 using Microsoft.EntityFrameworkCore;
-using Saldoa.API.Persistence;
+using Saldoa.API.Infrastructure.Persistence;
 
 namespace Saldoa.API.Auth;
 

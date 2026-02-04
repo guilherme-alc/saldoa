@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Saldoa.API.Identity;
 
-namespace Saldoa.API.Persistence.Configurations;
+namespace Saldoa.API.Infrastructure.Persistence.Configurations;
 
 public class ApplicationUserConfiguration :  IEntityTypeConfiguration<ApplicationUser>
 {

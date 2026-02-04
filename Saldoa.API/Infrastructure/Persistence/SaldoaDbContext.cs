@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
-using Saldoa.Domain.Entities;
-using Saldoa.Domain.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Saldoa.API.Identity;
+using Saldoa.Domain.Auth;
+using Saldoa.Domain.Entities;
 
-namespace Saldoa.API.Persistence
+namespace Saldoa.API.Infrastructure.Persistence
 {
     public class SaldoaDbContext : IdentityDbContext<ApplicationUser>
     {

@@ -1,6 +1,6 @@
 using Saldoa.Application.Common.Abstractions;
 
-namespace Saldoa.API.Persistence;
+namespace Saldoa.API.Infrastructure.Persistence;
 
 public class UnitOfWork : IUnitOfWork
 {

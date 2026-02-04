@@ -4,44 +4,36 @@ using Saldoa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Saldoa.Domain.Enums;
 
-namespace Saldoa.API.Persistence.Repositories;
+namespace Saldoa.API.Infrastructure.Persistence.Repositories;
 
-public class TransactionRepository : ITransactionRepository
+public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepository
 {
-    private readonly SaldoaDbContext _dbContext;
-    private ITransactionRepository _transactionRepositoryImplementation;
-
-    public TransactionRepository(SaldoaDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-    
     public async Task AddAsync(Transaction transaction, CancellationToken ct = default)
     {
-        await _dbContext.Transactions.AddAsync(transaction, ct);
+        await dbContext.Transactions.AddAsync(transaction, ct);
     }
 
     public void Remove(Transaction transaction)
     {
-        _dbContext.Transactions.Remove(transaction);
+        dbContext.Transactions.Remove(transaction);
     }
 
     public async Task<Transaction?> GetByIdAsync(long id, string userId, CancellationToken ct = default)
     {
-        return await _dbContext.Transactions
+        return await dbContext.Transactions
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
 
     public async Task<Transaction?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct = default)
     {
-        return await _dbContext.Transactions
+        return await dbContext.Transactions
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
 
     public async Task<Transaction?> GetByIdWithCategoryAsync(long id, string userId, CancellationToken ct)
     {
-        return await _dbContext.Transactions
+        return await dbContext.Transactions
             .AsNoTracking()
             .Include(t => t.Category)
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
@@ -57,7 +49,7 @@ public class TransactionRepository : ITransactionRepository
         int pageSize, 
         CancellationToken ct = default)
     {
-        var query = _dbContext
+        var query = dbContext
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
@@ -80,7 +72,7 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<PagedResult<Transaction>> ListPendingAsync(string userId, ETransactionType? type, int pageNumber, int pageSize, CancellationToken ct)
     {
-        var query = _dbContext
+        var query = dbContext
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
@@ -101,7 +93,7 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<PagedResult<Transaction>> ListByCategoryAsync(string userId, DateOnly startDate, DateOnly endDate, long categoryId, int pageNumber, int pageSize, CancellationToken ct)
     {
-        var query = _dbContext
+        var query = dbContext
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&

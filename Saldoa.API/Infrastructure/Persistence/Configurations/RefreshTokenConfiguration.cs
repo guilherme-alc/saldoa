@@ -1,8 +1,8 @@
-using Saldoa.Domain.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Saldoa.Domain.Auth;
 
-namespace Saldoa.API.Persistence.Configurations;
+namespace Saldoa.API.Infrastructure.Persistence.Configurations;
 
 public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
