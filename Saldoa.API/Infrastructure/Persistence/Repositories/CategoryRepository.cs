@@ -66,9 +66,9 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
             ct);
     }
 
-    public Task<bool> HasTransactionsAsync(long id, string userId, CancellationToken ct = default)
+    public async Task<bool> HasTransactionsAsync(long id, string userId, CancellationToken ct = default)
     {
-        return dbContext.Transactions.AnyAsync(
+        return await dbContext.Transactions.AnyAsync(
             t => t.CategoryId == id && t.UserId == userId,
             ct);
     }
