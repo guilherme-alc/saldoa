@@ -1,0 +1,73 @@
+using Microsoft.EntityFrameworkCore;
+using Saldoa.Application.CategoryBudgets.Abstractions;
+using Saldoa.Application.Common.Pagination;
+using Saldoa.Domain.Entities;
+
+namespace Saldoa.API.Infrastructure.Persistence.Repositories;
+
+public class CategoryBudgetRepository(SaldoaDbContext dbContext) : ICategoryBudgetRepository
+{
+    public async Task AddAsync(CategoryBudget categoryBudget, CancellationToken ct)
+    {
+        await dbContext.CategoryBudgets.AddAsync(categoryBudget, ct);
+    }
+
+    public void Remove(CategoryBudget categoryBudget)
+    {
+        dbContext.CategoryBudgets.Remove(categoryBudget);
+    }
+
+    public async Task<CategoryBudget?> GetByIdAsync(long id, string userId, CancellationToken ct)
+    {
+        var categoryBudget = await dbContext.CategoryBudgets
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, ct);
+
+        return categoryBudget;
+    }
+
+    public async Task<CategoryBudget?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct)
+    {
+        var categoryBudget = await dbContext.CategoryBudgets
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, ct);
+
+        return categoryBudget;
+    }
+
+    public async Task<PagedResult<CategoryBudget>> ListAsync(
+        int pageNumber, 
+        int pageSize, 
+        string userId, 
+        CancellationToken ct)
+    {
+        var query = dbContext
+            .CategoryBudgets
+            .AsNoTracking()
+            .Where(c => c.UserId == userId);
+
+        var total = await query.CountAsync(ct);
+        
+        var data = await query
+            .OrderBy(c => c.PeriodStart)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        return new PagedResult<CategoryBudget>(data, total, pageNumber, pageSize);
+    }
+
+    public async Task<bool> ExistsForPeriodAsync(
+        string userId,
+        long categoryId,
+        DateOnly periodStart,
+        DateOnly periodEnd,
+        CancellationToken ct)
+    {
+        return await dbContext.CategoryBudgets.AnyAsync(
+            c => c.UserId == userId 
+                 && c.CategoryId == categoryId
+                 && c.PeriodStart <= periodEnd
+                 && c.PeriodEnd >= periodStart,
+            ct);
+    }
+}
