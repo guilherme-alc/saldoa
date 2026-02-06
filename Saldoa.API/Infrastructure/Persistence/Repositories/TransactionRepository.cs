@@ -41,12 +41,12 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
 
 
     public async Task<PagedResult<Transaction>> ListByPeriodAsync(
-        string userId, 
-        DateOnly startDate, 
-        DateOnly endDate, 
+        string userId,
+        DateOnly startDate,
+        DateOnly endDate,
         ETransactionType? type,
-        int pageNumber, 
-        int pageSize, 
+        int pageNumber,
+        int pageSize,
         CancellationToken ct = default)
     {
         var query = dbContext
@@ -57,7 +57,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
                         t.PaidOrReceivedAt.Value >= startDate &&
                         t.PaidOrReceivedAt.Value <= endDate &&
                         (type == null || t.Type == type));
-        
+
         var total = await query.CountAsync(ct);
 
         var data = await query
@@ -66,11 +66,12 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
-        
+
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
 
-    public async Task<PagedResult<Transaction>> ListPendingAsync(string userId, ETransactionType? type, int pageNumber, int pageSize, CancellationToken ct)
+    public async Task<PagedResult<Transaction>> ListPendingAsync(string userId, ETransactionType? type, int pageNumber,
+        int pageSize, CancellationToken ct)
     {
         var query = dbContext
             .Transactions
@@ -78,7 +79,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Where(t => t.UserId == userId &&
                         t.PaidOrReceivedAt == null &&
                         (type == null || t.Type == type));
-        
+
         var total = await query.CountAsync(ct);
 
         var data = await query
@@ -87,11 +88,12 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
-        
+
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
 
-    public async Task<PagedResult<Transaction>> ListByCategoryAsync(string userId, DateOnly startDate, DateOnly endDate, long categoryId, int pageNumber, int pageSize, CancellationToken ct)
+    public async Task<PagedResult<Transaction>> ListByCategoryAsync(string userId, DateOnly startDate, DateOnly endDate,
+        long categoryId, int pageNumber, int pageSize, CancellationToken ct)
     {
         var query = dbContext
             .Transactions
@@ -101,7 +103,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
                         t.PaidOrReceivedAt.Value >= startDate &&
                         t.PaidOrReceivedAt.Value <= endDate &&
                         t.CategoryId == categoryId);
-        
+
         var total = await query.CountAsync(ct);
 
         var data = await query
@@ -110,7 +112,41 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
-        
+
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
+    }
+
+    public async Task<decimal> GetTotalForPeriodAsync(
+        string userId,
+        long categoryId,
+        DateOnly start,
+        DateOnly end,
+        CancellationToken ct)
+    {
+        return await dbContext.Transactions
+            .Where(t =>
+                t.UserId == userId &&
+                t.CategoryId == categoryId &&
+                t.PaidOrReceivedAt >= start &&
+                t.PaidOrReceivedAt <= end)
+            .SumAsync(t => t.Amount, ct);
+    }
+
+    public async Task<decimal> GetTotalForPeriodExcludingAsync(
+        string userId,
+        long categoryId,
+        DateOnly start,
+        DateOnly end,
+        long excludeTransactionId,
+        CancellationToken ct)
+    {
+        return await dbContext.Transactions
+            .Where(t =>
+                t.UserId == userId &&
+                t.CategoryId == categoryId &&
+                t.Id != excludeTransactionId &&
+                t.PaidOrReceivedAt >= start &&
+                t.PaidOrReceivedAt <= end)
+            .SumAsync(t => t.Amount, ct);
     }
 }

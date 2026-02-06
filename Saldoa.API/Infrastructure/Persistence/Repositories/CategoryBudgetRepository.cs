@@ -70,4 +70,14 @@ public class CategoryBudgetRepository(SaldoaDbContext dbContext) : ICategoryBudg
                  && c.PeriodEnd >= periodStart,
             ct);
     }
+
+    public async Task<CategoryBudget?> GetActiveForPeriodAsync(string userId, long categoryId, DateOnly date, CancellationToken ct)
+    {
+        return await dbContext.CategoryBudgets
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.UserId == userId
+                                      && c.CategoryId == categoryId
+                                      && c.PeriodStart <= date
+                                      && c.PeriodEnd >= date, cancellationToken: ct);
+    }
 }
