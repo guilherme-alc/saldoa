@@ -1,3 +1,3 @@
 namespace Saldoa.Application.Categories.Create;
 
-public record CreateCategoryResponse(long id, string name);
+public record CreateCategoryResponse(long Id, string Name);

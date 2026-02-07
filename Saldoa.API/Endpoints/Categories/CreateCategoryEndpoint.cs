@@ -30,7 +30,7 @@ public static class CreateCategoryEndpoint
             var response = result.Value!;
             
             return Results.Created(
-                $"/categories/{response.id}",
+                $"/categories/{response.Id}",
                 response);
         });
     }
