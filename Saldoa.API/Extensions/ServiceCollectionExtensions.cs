@@ -21,6 +21,8 @@ using Saldoa.Application.Categories.Delete;
 using Saldoa.Application.Categories.GetById;
 using Saldoa.Application.Categories.List;
 using Saldoa.Application.Categories.Update;
+using Saldoa.Application.CategoryBudgets.Abstractions;
+using Saldoa.Application.CategoryBudgets.Create;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Identity.Abstractions;
 using Saldoa.Application.Transactions.Abstractions;
@@ -127,6 +129,7 @@ public static class ServiceCollectionExtensions
 
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
         builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+        builder.Services.AddScoped<ICategoryBudgetRepository, CategoryBudgetRepository>();
 
         return builder;
     }
@@ -155,6 +158,8 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<ListTransactionsByMonthUseCase>();
         builder.Services.AddScoped<ListPendingTransactionsUseCase>();
         builder.Services.AddScoped<ListTransactionsByCategoryUseCase>();
+        
+        builder.Services.AddScoped<CreateCategoryBudgetUseCase>();
 
         return builder;
     }
