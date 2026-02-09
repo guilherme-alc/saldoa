@@ -8,5 +8,6 @@ public static class CategoryBudgetsEndpoints
             .WithTags("Category Budgets");
 
         CreateCategoryBudgetEndpoint.Map(group);
+        ListCategoryBudgetsEndpoint.Map(group);
     }
 }

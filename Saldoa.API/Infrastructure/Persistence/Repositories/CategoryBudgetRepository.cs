@@ -37,14 +37,45 @@ public class CategoryBudgetRepository(SaldoaDbContext dbContext) : ICategoryBudg
     public async Task<PagedResult<CategoryBudget>> ListAsync(
         int pageNumber, 
         int pageSize, 
-        string userId, 
+        string userId,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        bool? active,
         CancellationToken ct)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        
         var query = dbContext
             .CategoryBudgets
             .AsNoTracking()
             .Where(c => c.UserId == userId);
 
+        if (startDate.HasValue)
+        {
+            query = query.Where(c => c.PeriodEnd >= startDate.Value);
+        }
+        
+        if (endDate.HasValue)
+        {
+            query = query.Where(c => c.PeriodStart <= endDate.Value);
+        }
+        
+        if (active.HasValue)
+        {
+            if (active.Value)
+            {
+                query = query.Where(c =>
+                    c.PeriodStart <= today &&
+                    c.PeriodEnd >= today);
+            }
+            else
+            {
+                query = query.Where(c =>
+                    c.PeriodEnd < today ||
+                    c.PeriodStart > today);
+            }
+        }
+        
         var total = await query.CountAsync(ct);
         
         var data = await query
