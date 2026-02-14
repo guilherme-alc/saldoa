@@ -502,7 +502,7 @@ namespace Saldoa.API.Infrastructure.Persistence.Migrations
                     b.HasOne("Saldoa.Domain.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_category_budgets_category");
 
