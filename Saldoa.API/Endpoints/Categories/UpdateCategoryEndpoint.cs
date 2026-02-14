@@ -29,6 +29,11 @@ public static class UpdateCategoryEndpoint
                 return Results.Conflict(new { error = result.Error });
             
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Atualiza categoria")
+        .WithDescription(
+            "Atualiza parcialmente a categoria. Apenas propriedades enviadas com valor diferente de null serão alteradas. " +
+            "Para limpar um campo opcional, envie uma string vazia."
+        );
     }
 }

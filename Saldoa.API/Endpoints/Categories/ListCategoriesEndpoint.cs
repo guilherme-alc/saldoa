@@ -28,6 +28,8 @@ public static class ListCategoriesEndpoint
                 return Results.BadRequest(new { error = result.Error });
             
             return Results.Ok(result.Value);
-        });
+        })
+        .WithName("Obtém lista de categorias")
+        .WithDescription("Obtém lista de categorias do usuário com paginação");
     }
 }

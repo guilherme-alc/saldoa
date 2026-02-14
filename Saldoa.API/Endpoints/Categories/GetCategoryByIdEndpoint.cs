@@ -23,6 +23,8 @@ public static class GetCategoryByIdEndpoint
                 return Results.NotFound(new { error = result.Error });
             
             return Results.Ok(result.Value);
-        });
+        })
+        .WithSummary("Obtém uma categoria")
+        .WithDescription("Obtém uma categoria pelo Id");
     }
 }

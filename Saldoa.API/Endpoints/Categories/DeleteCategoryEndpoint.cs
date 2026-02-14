@@ -22,6 +22,8 @@ public static class DeleteCategoryEndpoint
                 return Results.NotFound(new { error = result.Error });
             
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Remove uma categoria")
+        .WithDescription("Remove categoria pelo Id");
     }
 }

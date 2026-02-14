@@ -32,6 +32,8 @@ public static class CreateCategoryEndpoint
             return Results.Created(
                 $"/categories/{response.Id}",
                 response);
-        });
+        })
+        .WithSummary("Cria nova categoria")
+        .WithDisplayName("Cria nova categoria Nome (obrigatório), descrição e cor (opcionais)");
     }
 }
