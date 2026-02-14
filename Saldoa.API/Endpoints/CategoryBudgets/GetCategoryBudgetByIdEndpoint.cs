@@ -25,6 +25,6 @@ public static class GetCategoryBudgetByIdEndpoint
             return Results.Ok(result.Value);
         })
         .WithSummary("Obtém um limite de gasto por categoria")
-        .WithDescription("Obtém um limite de gasto pelo Id e pelo Id do usuário autenticado");
+        .WithDescription("Obtém um limite de gasto pelo Id");
     }
 }

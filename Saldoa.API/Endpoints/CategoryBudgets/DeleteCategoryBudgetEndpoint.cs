@@ -24,6 +24,6 @@ public static class DeleteCategoryBudgetEndpoint
             return Results.NoContent();
         })
         .WithSummary("Remove um limite de gasto por categoria")
-        .WithDescription("Remove um limite de gasto pelo Id e pelo Id do usuário autenticado");
+        .WithDescription("Remove um limite de gasto pelo Id");
     }
 }

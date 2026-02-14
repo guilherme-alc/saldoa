@@ -30,11 +30,11 @@ public static class ListCategoryBudgetsEndpoint
             return Results.Ok(result.Value);
         })
         .WithSummary("Obtém lista de limite de gasto por categoria")
-        .WithDescription("""
-                         Obtém lista de limites de gastos através dos filtros opcionais: 
-                                                     período de apuração e/ou se estão ativos considerando a data atual. Caso active seja falso, 
-                                                     irá trazer limites antigos ou que ainda não começaram, 
-                                                     depende se o filtro de data está sendo usado em conjunto
-                         """);
+        .WithDescription(
+            "Obtém lista de limites de gastos com filtros opcionais de período e status. " +
+            "O filtro 'active' considera a data atual (UTC) " +
+            "true = vigente hoje; false = expirado ou futuro." +
+            "Filtros podem ser combinados. "
+        );
     }
 }
