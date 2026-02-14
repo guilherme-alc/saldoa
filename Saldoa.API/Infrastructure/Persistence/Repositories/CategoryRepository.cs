@@ -65,11 +65,4 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
             c => c.UserId == userId && c.NormalizedName == nameNormalized,
             ct);
     }
-
-    public async Task<bool> HasTransactionsAsync(long id, string userId, CancellationToken ct = default)
-    {
-        return await dbContext.Transactions.AnyAsync(
-            t => t.CategoryId == id && t.UserId == userId,
-            ct);
-    }
 }

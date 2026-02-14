@@ -1,17 +1,20 @@
 using Saldoa.Application.Categories.Abstractions;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
+using Saldoa.Application.Transactions.Abstractions;
 
 namespace Saldoa.Application.Categories.Delete;
 
 public class DeleteCategoryUseCase
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ITransactionRepository _transactionRepository;
     private readonly IUnitOfWork _unit;
 
-    public DeleteCategoryUseCase(ICategoryRepository categoryRepository, IUnitOfWork unit)
+    public DeleteCategoryUseCase(ICategoryRepository categoryRepository, ITransactionRepository transactionRepository, IUnitOfWork unit)
     {
         _categoryRepository = categoryRepository;
+        _transactionRepository = transactionRepository;
         _unit = unit;
     }
 
@@ -22,7 +25,7 @@ public class DeleteCategoryUseCase
         if (category is null)
             return Result.Failure("Categoria não encontrada");
         
-        if (await _categoryRepository.HasTransactionsAsync(id, userId, ct))
+        if (await _transactionRepository.ExistsForCategoryAsync(id, userId, ct))
             return Result.Failure("Não é possível excluir uma categoria com transações");
         
         _categoryRepository.Remove(category);

@@ -8,6 +8,8 @@ namespace Saldoa.API.Infrastructure.Persistence.Repositories;
 
 public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepository
 {
+    private ITransactionRepository _transactionRepositoryImplementation;
+
     public async Task AddAsync(Transaction transaction, CancellationToken ct = default)
     {
         await dbContext.Transactions.AddAsync(transaction, ct);
@@ -148,5 +150,15 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
                 t.PaidOrReceivedAt >= start &&
                 t.PaidOrReceivedAt <= end)
             .SumAsync(t => t.Amount, ct);
+    }
+
+    public async Task<bool> ExistsForCategoryAsync(long categoryId, string userId, CancellationToken ct)
+    {
+        return await dbContext.Transactions
+            .AsNoTracking()
+            .AnyAsync(
+                t => t.CategoryId == categoryId && 
+                     t.UserId == userId,
+                ct);
     }
 }

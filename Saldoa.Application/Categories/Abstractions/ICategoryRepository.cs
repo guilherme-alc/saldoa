@@ -11,5 +11,4 @@ public interface ICategoryRepository
     Task<Category?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct);
     Task<PagedResult<Category>> ListAsync(int pageNumber, int pageSize, string userId, CancellationToken ct); 
     Task<bool> ExistsAsync(string userId, string name, CancellationToken ct);
-    Task<bool> HasTransactionsAsync(long id, string userId, CancellationToken ct);
 }
