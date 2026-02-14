@@ -49,7 +49,7 @@ public class CategoryBudgetsConfiguration
             .WithMany()
             .HasForeignKey(c => c.CategoryId)
             .HasConstraintName("fk_category_budgets_category")
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
