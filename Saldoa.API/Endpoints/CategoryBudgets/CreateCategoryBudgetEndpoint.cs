@@ -32,6 +32,8 @@ public static class CreateCategoryBudgetEndpoint
             return Results.Created(
                 $"/category-budgets/{response.Id}",
                 response);
-        });
+        })        
+        .WithSummary("Cria um limite de gasto por categoria")
+        .WithDescription("Cria limite de gasto informando: Id da categoria em que a regra será aplicada, périodo em que essa regra será válida e o limite definido");
     }
 }
