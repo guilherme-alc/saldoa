@@ -26,6 +26,7 @@ using Saldoa.Application.CategoryBudgets.Create;
 using Saldoa.Application.CategoryBudgets.Delete;
 using Saldoa.Application.CategoryBudgets.GetCategoryBudgetById;
 using Saldoa.Application.CategoryBudgets.ListCategoryBudgets;
+using Saldoa.Application.CategoryBudgets.Update;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Identity.Abstractions;
 using Saldoa.Application.Transactions.Abstractions;
@@ -166,6 +167,7 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<ListCategoryBudgetsUseCase>();
         builder.Services.AddScoped<DeleteCategoryBudgetUseCase>();
         builder.Services.AddScoped<GetCategoryBudgetByIdUseCase>();
+        builder.Services.AddScoped<UpdateCategoryBudgetUseCase>();
     
         return builder;
     }

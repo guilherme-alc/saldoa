@@ -101,6 +101,23 @@ public class CategoryBudgetRepository(SaldoaDbContext dbContext) : ICategoryBudg
                  && c.PeriodEnd >= periodStart,
             ct);
     }
+    
+    public async Task<bool> ExistsForPeriodAsync(
+        string userId,
+        long categoryId,
+        long categoryBudgetId,
+        DateOnly periodStart,
+        DateOnly periodEnd,
+        CancellationToken ct)
+    {
+        return await dbContext.CategoryBudgets.AnyAsync(
+            c => c.UserId == userId 
+                 && c.Id != categoryBudgetId
+                 && c.CategoryId == categoryId
+                 && c.PeriodStart <= periodEnd
+                 && c.PeriodEnd >= periodStart,
+            ct);
+    }
 
     public async Task<CategoryBudget?> GetActiveForPeriodAsync(string userId, long categoryId, DateOnly date, CancellationToken ct)
     {
