@@ -13,4 +13,5 @@ public interface ICategoryBudgetRepository
     Task<bool> ExistsForPeriodAsync(string userId, long categoryId, DateOnly periodStart, DateOnly periodEnd, CancellationToken ct);
     Task<bool> ExistsForPeriodAsync(string userId, long categoryId, long categoryBudgetId, DateOnly periodStart, DateOnly periodEnd, CancellationToken ct);
     Task<CategoryBudget?> GetActiveForPeriodAsync(string userId, long categoryId, DateOnly date, CancellationToken ct);
+    Task<PagedResult<CategoryBudget>> GetByCategoryAsync(string userId, long categoryId, int pageNumber, int pageSize, CancellationToken ct);
 }

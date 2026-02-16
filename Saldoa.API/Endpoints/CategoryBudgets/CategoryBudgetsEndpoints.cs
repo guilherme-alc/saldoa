@@ -12,5 +12,6 @@ public static class CategoryBudgetsEndpoints
         DeleteCategoryBudgetEndpoint.Map(group);
         GetCategoryBudgetByIdEndpoint.Map(group);
         UpdateCategoryBudgetEndpoint.Map(group);
+        GetCategoryBudgetsByCategoryEndpoint.Map(group);
     }
 }

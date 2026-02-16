@@ -128,4 +128,22 @@ public class CategoryBudgetRepository(SaldoaDbContext dbContext) : ICategoryBudg
                                       && c.PeriodStart <= date
                                       && c.PeriodEnd >= date, cancellationToken: ct);
     }
+
+    public async Task<PagedResult<CategoryBudget>> GetByCategoryAsync(string userId, long categoryId, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        var query = dbContext
+            .CategoryBudgets
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && c.CategoryId == categoryId);
+        
+        var total = await query.CountAsync(ct);
+        
+        var data = await query
+            .OrderBy(c => c.PeriodStart)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        return new PagedResult<CategoryBudget>(data, total, pageNumber, pageSize);
+    }
 }
