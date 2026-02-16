@@ -33,7 +33,8 @@ public class ListCategoryBudgetsUseCase
                 c.PeriodStart,
                 c.PeriodEnd,
                 c.LimitAmount
-            )).ToList();
+            )
+        ).ToList();
 
         var result = new PagedResult<CategoryBudgetResponse>(categoryBudgetsResponse, data.TotalCount, data.PageNumber, data.PageSize);
         
