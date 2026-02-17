@@ -34,6 +34,6 @@ public static class CreateCategoryEndpoint
                 response);
         })
         .WithSummary("Cria nova categoria")
-        .WithDisplayName("Cria nova categoria Nome (obrigatório), descrição e cor (opcionais)");
+        .WithDescription("Cria nova categoria Nome (obrigatório), descrição e cor (opcionais)");
     }
 }
