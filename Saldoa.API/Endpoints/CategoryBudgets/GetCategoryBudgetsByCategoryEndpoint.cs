@@ -9,7 +9,7 @@ public static class GetCategoryBudgetsByCategoryEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {
-        group.MapGet("/category-budgets/by-category/{categoryId:long:min(1)}", async (
+        group.MapGet("/by-category/{categoryId:long:min(1)}", async (
             long categoryId,
             [AsParameters] GetCategoryBudgetsByCategoryRequest request,
             IValidator<GetCategoryBudgetsByCategoryRequest> validator,
