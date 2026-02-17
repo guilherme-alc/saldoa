@@ -14,9 +14,4 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CategoryBudgets\GetCategoryBudgetByCategory\" />
-    <Folder Include="CategoryBudgets\GetCategoryBudgetSummary\" />
-  </ItemGroup>
 </Project>

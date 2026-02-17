@@ -1,32 +1,53 @@
 using Saldoa.Application.CategoryBudgets.Abstractions;
 using Saldoa.Application.CategoryBudgets.Common;
 using Saldoa.Application.Common.Results;
+using Saldoa.Application.Transactions.Abstractions;
 
 namespace Saldoa.Application.CategoryBudgets.GetCategoryBudgetById;
 
 public class GetCategoryBudgetByIdUseCase
 {
     private readonly ICategoryBudgetRepository _categoryBudgetRepository;
+    private readonly ITransactionRepository _transactionRepository;
 
-    public GetCategoryBudgetByIdUseCase(ICategoryBudgetRepository categoryBudgetRepository)
+    public GetCategoryBudgetByIdUseCase(ICategoryBudgetRepository categoryBudgetRepository, ITransactionRepository transactionRepository)
     {
         _categoryBudgetRepository = categoryBudgetRepository;
+        _transactionRepository = transactionRepository;
     }
 
-    public async Task<Result<CategoryBudgetResponse>> ExecuteAsync(string userId, long categoryBudgetId, CancellationToken ct)
+    public async Task<Result<CategoryBudgetDetailsResponse>> ExecuteAsync(string userId, long categoryBudgetId, CancellationToken ct)
     {
         var categoryBudget = await _categoryBudgetRepository.GetByIdAsync(categoryBudgetId, userId, ct);
         
         if(categoryBudget is null)
-            return Result<CategoryBudgetResponse>.Failure("Gasto por categoria não encontrado");
+            return Result<CategoryBudgetDetailsResponse>.Failure("Gasto por categoria não encontrado");
+
+        var total = await _transactionRepository.GetTotalForPeriodAsync(
+            userId, 
+            categoryBudget.CategoryId, 
+            categoryBudget.PeriodStart, 
+            categoryBudget.PeriodEnd, 
+            ct);
         
-        var response = new CategoryBudgetResponse(
+        var totalSpent = total;
+        
+        var remainingAmount = categoryBudget.LimitAmount - totalSpent;
+        
+        var percentageUsed = categoryBudget.LimitAmount == 0
+            ? 0
+            : (totalSpent / categoryBudget.LimitAmount) * 100;
+        
+        var response = new CategoryBudgetDetailsResponse(
             categoryBudget.Id, 
             categoryBudget.CategoryId, 
             categoryBudget.PeriodStart, 
             categoryBudget.PeriodEnd, 
-            categoryBudget.LimitAmount);
+            categoryBudget.LimitAmount,
+            totalSpent,
+            remainingAmount,
+            percentageUsed);
         
-        return Result<CategoryBudgetResponse>.Success(response);
+        return Result<CategoryBudgetDetailsResponse>.Success(response);
     } 
 }

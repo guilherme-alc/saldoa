@@ -8,8 +8,6 @@ namespace Saldoa.API.Infrastructure.Persistence.Repositories;
 
 public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepository
 {
-    private ITransactionRepository _transactionRepositoryImplementation;
-
     public async Task AddAsync(Transaction transaction, CancellationToken ct = default)
     {
         await dbContext.Transactions.AddAsync(transaction, ct);
@@ -40,8 +38,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Include(t => t.Category)
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, ct);
     }
-
-
+    
     public async Task<PagedResult<Transaction>> ListByPeriodAsync(
         string userId,
         DateOnly startDate,
@@ -123,14 +120,16 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         long categoryId,
         DateOnly start,
         DateOnly end,
-        CancellationToken ct)
+        CancellationToken ct,
+        ETransactionType? type = ETransactionType.Expense)
     {
         return await dbContext.Transactions
             .Where(t =>
                 t.UserId == userId &&
                 t.CategoryId == categoryId &&
                 t.PaidOrReceivedAt >= start &&
-                t.PaidOrReceivedAt <= end)
+                t.PaidOrReceivedAt <= end  &&
+                t.Type == type)
             .SumAsync(t => t.Amount, ct);
     }
 
@@ -140,7 +139,8 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         DateOnly start,
         DateOnly end,
         long excludeTransactionId,
-        CancellationToken ct)
+        CancellationToken ct,
+        ETransactionType? type = ETransactionType.Expense)
     {
         return await dbContext.Transactions
             .Where(t =>
@@ -148,7 +148,8 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
                 t.CategoryId == categoryId &&
                 t.Id != excludeTransactionId &&
                 t.PaidOrReceivedAt >= start &&
-                t.PaidOrReceivedAt <= end)
+                t.PaidOrReceivedAt <= end &&
+                t.Type == type)
             .SumAsync(t => t.Amount, ct);
     }
 
