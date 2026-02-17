@@ -28,6 +28,8 @@ public static  class ListTransactionsByMonthEndpoint
                 return Results.BadRequest(new { error = result.Error });
             
             return Results.Ok(result.Value);
-        });
+        })
+        .WithSummary("Obtém lista de transações de um mês")
+        .WithDescription("Obtém lista de transações de um mês específico com paginação e podendo filtrar pelo tipo (despesa ou renda)");
     }
 }

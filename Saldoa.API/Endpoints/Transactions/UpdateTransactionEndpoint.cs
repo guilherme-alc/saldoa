@@ -29,6 +29,11 @@ public static class UpdateTransactionEndpoint
                 return Results.BadRequest(new { error = result.Error });
 
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Atualiza uma transação")
+        .WithDescription(
+            "Atualiza parcialmente uma transação. Apenas propriedades enviadas com valor diferente de null serão alteradas. " +
+            "Campos opcionais como Description podem ser limpos enviando string vazia."
+        );;
     }
 }

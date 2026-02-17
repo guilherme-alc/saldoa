@@ -22,6 +22,8 @@ public static class DeleteTransactionEndpoint
                 return Results.NotFound(new { error = result.Error });
 
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Remove uma transação")
+        .WithDescription("Remove transação pelo Id");
     }
 }

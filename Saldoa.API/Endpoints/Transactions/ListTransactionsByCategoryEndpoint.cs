@@ -28,6 +28,8 @@ public static class ListTransactionsByCategoryEndpoint
                 return Results.BadRequest(new { error = result.Error });
             
             return Results.Ok(result.Value);
-        });
+        })
+        .WithSummary("Obtém lista de transações de uma categoria")
+        .WithDescription("Obtém lista de transações de uma categoria específica com paginação e podendo ser filtrada por período");
     }
 }

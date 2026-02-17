@@ -28,6 +28,8 @@ public static class ListPendingTransactionsEndpoint
                 return Results.BadRequest(new { error = result.Error });
             
             return Results.Ok(result.Value);
-        });
+        })
+        .WithSummary("Obtém lista de transações pendentes")
+        .WithDescription("Obtém lista de transações sem data definida (pendentes) com paginação e podendo filtrar pelo tipo (despesa ou renda)");
     }
 }

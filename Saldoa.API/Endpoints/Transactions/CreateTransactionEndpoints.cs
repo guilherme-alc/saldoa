@@ -32,6 +32,9 @@ public static class CreateTransactionEndpoints
             return Results.Created(
                 $"/transactions/{response.Id}",
                 response);
-        });
+        })
+        .WithSummary("Cria nova transação")
+        .WithDescription("Cria nova categoria Título (obrigatório); Descrição (opcionail); Data de Pagamento ou Recebimento (opcionail); " +
+                         "Tipo da transação (obrigatório): 1 = Despesa, 2 = Renda; Quantia (obrigatório); Id da categoria (obrigatório)");
     }
 }
