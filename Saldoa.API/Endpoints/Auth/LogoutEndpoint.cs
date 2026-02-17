@@ -17,6 +17,11 @@ public class LogoutEndpoint
 
             await useCase.ExecuteAsync(request.RefreshToken, ct);
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Encerra a sessão do usuário")
+        .WithDescription(
+            "Revoga o Refresh Token informado, invalidando futuras renovações de sessão. " +
+            "Por segurança, sempre retorna 204 mesmo que o token não exista ou já esteja revogado."
+        );
     }
 }
