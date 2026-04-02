@@ -4,9 +4,9 @@
     {
         public int TotalInstallments { get; }
         public int InstallmentNumber { get; }
-        public Guid? InstallmentGroupId { get; } = null;
+        public long? InstallmentGroupId { get; } = null;
 
-        private InstallmentInfo(int totalInstallments, int installmentNumber, Guid? installmentGroupId) 
+        private InstallmentInfo(int totalInstallments, int installmentNumber, long? installmentGroupId) 
         {
             TotalInstallments = totalInstallments;
             InstallmentNumber = installmentNumber;
@@ -22,7 +22,7 @@
             );
         }
 
-        public static InstallmentInfo Create(int totalInstallments, int installmentNumber, Guid? installmentGroupId)
+        public static InstallmentInfo Create(int totalInstallments, int installmentNumber, long? installmentGroupId)
         {
             if (totalInstallments <= 1)
                 throw new ArgumentOutOfRangeException(nameof(totalInstallments), "Parcelamento deve ser maior que 1.");
