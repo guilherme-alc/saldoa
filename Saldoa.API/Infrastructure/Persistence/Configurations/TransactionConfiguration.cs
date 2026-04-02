@@ -46,6 +46,20 @@ namespace Saldoa.API.Infrastructure.Persistence.Configurations
                 .HasColumnName("paid_or_received_at")
                 .HasColumnType("date");
                 
+            builder.OwnsOne(t => t.InstallmentInfo, i =>
+            {
+                i.Property(ii => ii.TotalInstallments)
+                    .HasColumnName("installment_total")
+                    .IsRequired();
+
+                i.Property(ii => ii.InstallmentNumber)
+                    .HasColumnName("installment_number")
+                    .IsRequired();
+
+                i.Property(ii => ii.InstallmentGroupId)
+                    .HasColumnName("installment_group_id");
+            });
+
             builder.Property(t => t.UserId)
                 .HasColumnName("user_id")
                 .IsRequired();
