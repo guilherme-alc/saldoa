@@ -31,7 +31,8 @@ public class GetTransactionByIdUseCase
             new CategorySummaryResponse(
                 transaction.Category.Id,
                 transaction.Category.Name,
-                transaction.Category.Color)
+                transaction.Category.Color),
+            transaction.InstallmentInfo
         ));
     }
 }

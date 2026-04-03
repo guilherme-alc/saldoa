@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FluentValidation;
 using Saldoa.API.Extensions;
+using Saldoa.Application.Transactions.Common;
 using Saldoa.Application.Transactions.Create;
 
 namespace Saldoa.API.Endpoints.Transactions;
@@ -28,9 +29,10 @@ public static class CreateTransactionEndpoints
                 return Results.BadRequest(new { error = result.Error });
             
             var response = result.Value!;
-            
+            var responseItem = response!.Transactions.FirstOrDefault();
+
             return Results.Created(
-                $"/transactions/{response.Id}",
+                $"/transactions/{responseItem!.Id}",
                 response);
         })
         .WithSummary("Cria nova transação")

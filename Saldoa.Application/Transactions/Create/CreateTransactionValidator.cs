@@ -22,7 +22,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
             .IsInEnum()
             .WithMessage("Tipo da transação inválido.");
 
-        RuleFor(x => x.Amount)
+        RuleFor(x => x.TotalAmount)
             .GreaterThan(0)
             .WithMessage("O valor da transação deve ser maior que 0");
         
@@ -38,6 +38,13 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
             RuleFor(x => x.PaidOrReceivedAt!.Value)
                 .InclusiveBetween(min, max)
                 .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
+        });
+
+        When(x=> x.TotalInstallments.HasValue, () =>
+        {
+            RuleFor(x => x.TotalInstallments!.Value)
+                .GreaterThan(0)
+                .WithMessage("O total de parcelas deve ser maior que 0");
         });
     }
 }

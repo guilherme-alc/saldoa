@@ -38,7 +38,8 @@ public class ListTransactionsByPeriodUseCase
                 t.Type, 
                 t.Amount, 
                 t.PaidOrReceivedAt, 
-                new CategorySummaryResponse(t.Category.Id, t.Category.Name, t.Category.Color)
+                new CategorySummaryResponse(t.Category.Id, t.Category.Name, t.Category.Color),
+                t.InstallmentInfo
             )
         )
         .ToList();
