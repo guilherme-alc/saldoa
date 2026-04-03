@@ -11,7 +11,7 @@ namespace Saldoa.Domain.Entities
             string title,
             string? description,
             ETransactionType type,
-            decimal amount,
+            decimal totalAmount,
             DateOnly? paidOrReceivedAt,
             long categoryId,
             InstallmentInfo installmentInfo)
@@ -22,7 +22,7 @@ namespace Saldoa.Domain.Entities
             InitTitle(title);
             SetDescription(description);
             Type = type;
-            SetAmount(amount);
+            SetAmount(totalAmount);
             PaidOrReceivedAt = paidOrReceivedAt;
             CreatedAt = DateTimeOffset.UtcNow;
             CategoryId = categoryId;
