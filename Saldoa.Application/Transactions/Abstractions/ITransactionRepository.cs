@@ -8,7 +8,8 @@ public interface ITransactionRepository
 {
     Task AddAsync(Transaction transaction, CancellationToken ct);
     Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken ct);
-    void Remove(Transaction transaction);
+    void Delete(Transaction transaction);
+    Task DeleteByInstallmentGroupId(Guid installmentGroupId, CancellationToken ct);
     Task<Transaction?> GetByIdAsync(long id, string userId, CancellationToken ct);
     Task<Transaction?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct);
     Task<Transaction?> GetByIdWithCategoryAsync(long id, string userId, CancellationToken ct);

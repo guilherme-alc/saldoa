@@ -21,7 +21,11 @@ public class DeleteTransactionUseCase
         if (transaction is null)
             return Result.Failure("Transação não encontrada");
         
-        _transactionRepository.Remove(transaction);
+        if(transaction.InstallmentInfo.InstallmentGroupId == null)
+            _transactionRepository.Delete(transaction);
+        else
+           await _transactionRepository.DeleteByInstallmentGroupId(transaction.InstallmentInfo.InstallmentGroupId.Value, ct);
+
         await _unit.SaveChangesAsync(ct);
         
         return Result.Success();

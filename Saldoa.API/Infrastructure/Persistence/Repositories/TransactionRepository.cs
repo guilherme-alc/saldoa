@@ -18,9 +18,18 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         await dbContext.Transactions.AddRangeAsync(transactions, ct);
     }
 
-    public void Remove(Transaction transaction)
+    public void Delete(Transaction transaction)
     {
         dbContext.Transactions.Remove(transaction);
+    }
+
+    public async Task DeleteByInstallmentGroupId(Guid installmentGroupId, CancellationToken ct = default)
+    {
+        var transaction = await dbContext.Transactions
+            .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId)
+            .ToListAsync(ct);
+
+        dbContext.RemoveRange(transaction);
     }
 
     public async Task<Transaction?> GetByIdAsync(long id, string userId, CancellationToken ct = default)
