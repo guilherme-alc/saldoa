@@ -13,6 +13,11 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         await dbContext.Transactions.AddAsync(transaction, ct);
     }
 
+    public async Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken ct = default)
+    {
+        await dbContext.Transactions.AddRangeAsync(transactions, ct);
+    }
+
     public void Remove(Transaction transaction)
     {
         dbContext.Transactions.Remove(transaction);

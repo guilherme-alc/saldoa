@@ -7,6 +7,7 @@ namespace Saldoa.Application.Transactions.Abstractions;
 public interface ITransactionRepository
 {
     Task AddAsync(Transaction transaction, CancellationToken ct);
+    Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken ct);
     void Remove(Transaction transaction);
     Task<Transaction?> GetByIdAsync(long id, string userId, CancellationToken ct);
     Task<Transaction?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct);
