@@ -1,5 +1,6 @@
 using Saldoa.Application.Categories.Abstractions;
 using Saldoa.Application.CategoryBudgets.Abstractions;
+using Saldoa.Application.CategoryBudgets.Create;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
 using Saldoa.Application.Transactions.Abstractions;
@@ -35,118 +36,144 @@ public class CreateTransactionUseCase
         if(category == null)
             return Result<TransactionsResponse>.Failure("Categoria não encontrada");
 
-        var totalInstallment = request.TotalInstallments.HasValue && request.TotalInstallments.Value > 0
+        var totalInstallments = request.TotalInstallments.HasValue && request.TotalInstallments.Value > 0
             ? request.TotalInstallments.Value
             : 1;
 
-        if (request.PaidOrReceivedAt.HasValue)
+        var installments = BuildInstallments(request, totalInstallments);
+
+        if (request.Type == ETransactionType.Expense)
         {
-            var (baseValue, remainder) = CalculateInstallments(request.TotalAmount, totalInstallment);
+            var validationResult = await ValidateCategoryBudgetAsync(
+                userId,
+                request.CategoryId,
+                installments,
+                ct);
 
-            for (int i = 1; i <= totalInstallment; i++)
-            {
-                var amount = i == totalInstallment ? baseValue + remainder : baseValue;
-                var date = request.PaidOrReceivedAt.Value.AddMonths(i - 1);
-
-                var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                    userId,
-                    request.CategoryId,
-                    date,
-                    ct);
-
-                if (budget is not null)
-                {
-                    var spent = await _transactionRepository.GetTotalForPeriodAsync(
-                        userId,
-                        request.CategoryId,
-                        budget.PeriodStart,
-                        budget.PeriodEnd,
-                        ct,
-                        ETransactionType.Expense);
-
-                    if (spent + amount > budget.LimitAmount)
-                        return Result<TransactionsResponse>.Failure(
-                            $"Limite excedido para {date:MM/yyyy}");
-                }
-            }
+            if (!validationResult.IsSuccess)
+                return Result<TransactionsResponse>.Failure(validationResult.Error!);
         }
 
-        if (totalInstallment > 1)
-        {
-            var (baseValue, remainder) = CalculateInstallments(request.TotalAmount, totalInstallment);
-
-            var groupId = Guid.CreateVersion7();
-
-            var transactions = new List<Transaction>();
-
-            for (int i = 1; i <= totalInstallment; i++)
-            {
-                var amount = i == totalInstallment ? baseValue + remainder : baseValue;
-
-                var transaction = new Transaction(
-                    userId,
-                    request.Title,
-                    request.Description,
-                    request.Type,
-                    amount,
-                    request.PaidOrReceivedAt?.AddMonths(i - 1),
-                    category.Id,
-                    InstallmentInfo.Create(totalInstallment, i, groupId)
-                );
-                transactions.Add(transaction);
-            }
-
-            await _transactionRepository.AddRangeAsync(transactions, ct);
-            await _unit.SaveChangesAsync(ct);
-
-            var response = transactions.Select(t => 
-                new TransactionResponse(
-                    t.Id,
-                    t.Title,
-                    t.Description,
-                    t.Type,
-                    t.Amount,
-                    t.PaidOrReceivedAt,
-                    new CategorySummaryResponse(category.Id, category.Name, category.Color),
-                    t.InstallmentInfo
-                )
+        var transactions = installments.Select(i =>
+            new Transaction(
+                userId,
+                request.Title,
+                request.Description,
+                request.Type,
+                i.Amount,
+                i.Date,
+                category.Id,
+                i.InstallmentInfo
             )
+        ).ToList();
+
+        if (transactions.Count > 1)
+            await _transactionRepository.AddRangeAsync(transactions, ct);
+        else
+            await _transactionRepository.AddAsync(transactions[0], ct);
+
+        await _unit.SaveChangesAsync(ct);
+
+        var response = transactions.Select(t =>
+            new TransactionResponse(
+                t.Id,
+                t.Title,
+                t.Description,
+                t.Type,
+                t.Amount,
+                t.PaidOrReceivedAt,
+                new CategorySummaryResponse(category.Id, category.Name, category.Color),
+                t.InstallmentInfo.TotalInstallments > 1 ? t.InstallmentInfo : null
+            )
+        ).ToList();
+
+        return Result<TransactionsResponse>.Success(new TransactionsResponse(response));
+    }
+
+    private static List<InstallmentDraft> BuildInstallments(CreateTransactionRequest request, int totalInstallments)
+    {
+        var (baseValue, remainder) = CalculateInstallments(request.TotalAmount, totalInstallments);
+        var groupId = totalInstallments > 1 ? Guid.CreateVersion7() : (Guid?)null;
+
+        var installments = new List<InstallmentDraft>();
+
+        for (int i = 1; i <= totalInstallments; i++)
+        {
+            var amount = i == totalInstallments ? baseValue + remainder : baseValue;
+            var date = request.PaidOrReceivedAt?.AddMonths(i - 1);
+
+            var installmentInfo = totalInstallments > 1
+                ? InstallmentInfo.Create(totalInstallments, i, groupId!.Value)
+                : InstallmentInfo.Single();
+
+            installments.Add(new InstallmentDraft(amount, date, installmentInfo));
+        }
+
+        return installments;
+    }
+
+    private async Task<Result> ValidateCategoryBudgetAsync(
+        string userId,
+        long categoryId,
+        List<InstallmentDraft> installments,
+        CancellationToken ct)
+    {
+        var installmentsWithDate = installments
+            .Where(i => i.Date.HasValue)
             .ToList();
 
-            return Result<TransactionsResponse>.Success(new TransactionsResponse(response));
-        }
-        else
+        if (installmentsWithDate.Count == 0)
+            return Result.Success();
+
+        var amountsByBudgetPeriod = new Dictionary<(DateOnly Start, DateOnly End), decimal>();
+
+        foreach (var installment in installmentsWithDate)
         {
-            var transaction = new Transaction(
-                userId, 
-                request.Title, 
-                request.Description, 
-                request.Type, 
-                request.TotalAmount, 
-                request.PaidOrReceivedAt, 
-                category.Id,
-                InstallmentInfo.Single());
+            var date = installment.Date!.Value;
 
-            await _transactionRepository.AddAsync(transaction, ct);
+            var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
+                userId,
+                categoryId,
+                date,
+                ct);
 
-            await _unit.SaveChangesAsync(ct);
+            if (budget is null)
+                continue;
 
-            var response = new TransactionsResponse(
-                [
-                    new TransactionResponse(
-                    transaction.Id,
-                    transaction.Title,
-                    transaction.Description,
-                    transaction.Type,
-                    transaction.Amount,
-                    transaction.PaidOrReceivedAt,
-                    new CategorySummaryResponse(category.Id, category.Name, category.Color),
-                    null)
-                ]
-            );
+            var key = (budget.PeriodStart, budget.PeriodEnd);
 
-            return Result<TransactionsResponse>.Success(response);
+            if (!amountsByBudgetPeriod.ContainsKey(key))
+                amountsByBudgetPeriod[key] = 0;
+
+            amountsByBudgetPeriod[key] += installment.Amount;
         }
+
+        foreach (var period in amountsByBudgetPeriod)
+        {
+            var spent = await _transactionRepository.GetTotalForPeriodAsync(
+                userId,
+                categoryId,
+                period.Key.Start,
+                period.Key.End,
+                ct,
+                ETransactionType.Expense);
+
+            var totalProjected = spent + period.Value;
+
+            var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
+                userId,
+                categoryId,
+                period.Key.Start,
+                ct);
+
+            if (budget is not null && totalProjected > budget.LimitAmount)
+            {
+                return Result.Failure(
+                    $"Limite excedido para o período {period.Key.Start:MM/yyyy}");
+            }
+        }
+
+        return Result.Success();
     }
 
     private static (decimal baseValue, decimal remainder) CalculateInstallments(decimal total, int count)
