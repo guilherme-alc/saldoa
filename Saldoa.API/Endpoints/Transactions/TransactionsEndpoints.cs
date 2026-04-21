@@ -13,7 +13,6 @@ public static class TransactionsEndpoints
         DeleteTransactionEndpoint.Map(group);
         ListTransactionsByPeriodEndpoint.Map(group);
         ListTransactionsByMonthEndpoint.Map(group);
-        ListPendingTransactionsEndpoint.Map(group);
         ListTransactionsByCategoryEndpoint.Map(group);
     }
 }

@@ -33,12 +33,9 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
         var min = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3));
         var max = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(2));
 
-        When(x => x.PaidOrReceivedAt.HasValue, () =>
-        {
-            RuleFor(x => x.PaidOrReceivedAt!.Value)
-                .InclusiveBetween(min, max)
-                .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
-        });
+        RuleFor(x => x.PaidOrReceivedAt)
+            .InclusiveBetween(min, max)
+            .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
 
         When(x=> x.TotalInstallments.HasValue, () =>
         {

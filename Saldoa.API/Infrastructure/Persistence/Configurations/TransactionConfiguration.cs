@@ -44,7 +44,8 @@ namespace Saldoa.API.Infrastructure.Persistence.Configurations
 
             builder.Property(t => t.PaidOrReceivedAt)
                 .HasColumnName("paid_or_received_at")
-                .HasColumnType("date");
+                .HasColumnType("date")
+                .IsRequired();
                 
             builder.OwnsOne(t => t.InstallmentInfo, i =>
             {

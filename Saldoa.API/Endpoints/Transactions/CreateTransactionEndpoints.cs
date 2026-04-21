@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using FluentValidation;
 using Saldoa.API.Extensions;
-using Saldoa.Application.Transactions.Common;
 using Saldoa.Application.Transactions.Create;
 
 namespace Saldoa.API.Endpoints.Transactions;

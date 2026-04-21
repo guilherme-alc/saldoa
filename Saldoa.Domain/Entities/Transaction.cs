@@ -12,7 +12,7 @@ namespace Saldoa.Domain.Entities
             string? description,
             ETransactionType type,
             decimal totalAmount,
-            DateOnly? paidOrReceivedAt,
+            DateOnly paidOrReceivedAt,
             long categoryId,
             InstallmentInfo installmentInfo)
         {
@@ -34,7 +34,7 @@ namespace Saldoa.Domain.Entities
         public string? Description { get; private set; }
         public ETransactionType Type { get; private set; }
         public decimal Amount { get; private set; }
-        public DateOnly? PaidOrReceivedAt { get; private set; }
+        public DateOnly PaidOrReceivedAt { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
         public long CategoryId { get; private set; }
         public Category Category { get; private set; } = null!;
@@ -76,7 +76,7 @@ namespace Saldoa.Domain.Entities
         public void SetPaidOrReceivedAt(DateOnly? paidOrReceivedAt)
         {
             if (paidOrReceivedAt.HasValue)
-                PaidOrReceivedAt = paidOrReceivedAt;
+                PaidOrReceivedAt = paidOrReceivedAt.Value;
         }
 
         public void SetCategoryId(long? categoryId)

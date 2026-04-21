@@ -100,7 +100,7 @@ public class CreateTransactionUseCase
         for (int i = 1; i <= totalInstallments; i++)
         {
             var amount = i == totalInstallments ? baseValue + remainder : baseValue;
-            var date = request.PaidOrReceivedAt?.AddMonths(i - 1);
+            var date = request.PaidOrReceivedAt.AddMonths(i - 1);
 
             var installmentInfo = totalInstallments > 1
                 ? InstallmentInfo.Create(totalInstallments, i, groupId!.Value)
@@ -118,23 +118,18 @@ public class CreateTransactionUseCase
         List<InstallmentDraft> installments,
         CancellationToken ct)
     {
-        var installmentsWithDate = installments
-            .Where(i => i.Date.HasValue)
-            .ToList();
 
-        if (installmentsWithDate.Count == 0)
+        if (installments.Count == 0)
             return Result.Success();
 
         var amountsByBudgetPeriod = new Dictionary<(DateOnly Start, DateOnly End), decimal>();
 
-        foreach (var installment in installmentsWithDate)
+        foreach (var installment in installments)
         {
-            var date = installment.Date!.Value;
-
             var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
                 userId,
                 categoryId,
-                date,
+                installment.Date,
                 ct);
 
             if (budget is null)

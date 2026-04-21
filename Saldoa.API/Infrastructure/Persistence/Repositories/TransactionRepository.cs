@@ -66,9 +66,8 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
-                        t.PaidOrReceivedAt.HasValue &&
-                        t.PaidOrReceivedAt.Value >= startDate &&
-                        t.PaidOrReceivedAt.Value <= endDate &&
+                        t.PaidOrReceivedAt >= startDate &&
+                        t.PaidOrReceivedAt <= endDate &&
                         (type == null || t.Type == type));
 
         var total = await query.CountAsync(ct);
@@ -83,28 +82,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
 
-    public async Task<PagedResult<Transaction>> ListPendingAsync(string userId, ETransactionType? type, int pageNumber,
-        int pageSize, CancellationToken ct)
-    {
-        var query = dbContext
-            .Transactions
-            .AsNoTracking()
-            .Where(t => t.UserId == userId &&
-                        t.PaidOrReceivedAt == null &&
-                        (type == null || t.Type == type));
-
-        var total = await query.CountAsync(ct);
-
-        var data = await query
-            .Include(t => t.Category)
-            .OrderByDescending(t => t.CreatedAt)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(ct);
-
-        return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
-    }
-
     public async Task<PagedResult<Transaction>> ListByCategoryAsync(string userId, DateOnly startDate, DateOnly endDate,
         long categoryId, int pageNumber, int pageSize, CancellationToken ct)
     {
@@ -112,9 +89,8 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId &&
-                        t.PaidOrReceivedAt.HasValue &&
-                        t.PaidOrReceivedAt.Value >= startDate &&
-                        t.PaidOrReceivedAt.Value <= endDate &&
+                        t.PaidOrReceivedAt >= startDate &&
+                        t.PaidOrReceivedAt <= endDate &&
                         t.CategoryId == categoryId);
 
         var total = await query.CountAsync(ct);

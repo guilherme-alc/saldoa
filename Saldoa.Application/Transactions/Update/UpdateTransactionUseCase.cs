@@ -35,32 +35,29 @@ public class UpdateTransactionUseCase
         var finalAmount = request.Amount ?? transaction.Amount;
         var finalDate = request.PaidOrReceivedAt ?? transaction.PaidOrReceivedAt;
 
-        if (finalDate.HasValue)
+        var budget = await _categoryBudgetRepository
+            .GetActiveForPeriodAsync(
+                userId,
+                finalCategoryId,
+                finalDate,
+                ct);
+
+        if (budget is not null)
         {
-            var budget = await _categoryBudgetRepository
-                .GetActiveForPeriodAsync(
+            var spent = await _transactionRepository
+                .GetTotalForPeriodExcludingAsync(
                     userId,
                     finalCategoryId,
-                    finalDate.Value,
+                    budget.PeriodStart,
+                    budget.PeriodEnd,
+                    transaction.Id,
                     ct);
 
-            if (budget is not null)
-            {
-                var spent = await _transactionRepository
-                    .GetTotalForPeriodExcludingAsync(
-                        userId,
-                        finalCategoryId,
-                        budget.PeriodStart,
-                        budget.PeriodEnd,
-                        transaction.Id,
-                        ct);
-
-                if (spent + finalAmount > budget.LimitAmount)
-                    return Result.Failure(
-                        "Limite da categoria excedido para o período informado.");
-            }
+            if (spent + finalAmount > budget.LimitAmount)
+                return Result.Failure(
+                    "Limite da categoria excedido para o período informado.");
         }
-        
+
         if (request.CategoryId.HasValue)
         {
             var category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, userId, ct);
