@@ -42,6 +42,10 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
             RuleFor(x => x.TotalInstallments!.Value)
                 .GreaterThan(0)
                 .WithMessage("O total de parcelas deve ser maior que 0");
+
+            RuleFor(x => x.TotalInstallments!.Value)
+                .LessThanOrEqualTo(120)
+                .WithMessage("O número máximo de parcelas permitido é 120");
         });
     }
 }
