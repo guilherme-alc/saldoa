@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Saldoa.Application.Auth.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
