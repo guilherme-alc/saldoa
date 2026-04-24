@@ -1,6 +1,6 @@
 ﻿namespace Saldoa.Domain.Enums
 {
-    public enum ETransactionType
+    public enum TransactionType
     {
         Expense = 1,
         Income = 2

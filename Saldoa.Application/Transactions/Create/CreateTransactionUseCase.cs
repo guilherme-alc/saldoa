@@ -42,7 +42,7 @@ public class CreateTransactionUseCase
 
         var installments = BuildInstallments(request, totalInstallments);
 
-        if (request.Type == ETransactionType.Expense)
+        if (request.Type == TransactionType.Expense)
         {
             var validationResult = await ValidateCategoryBudgetAsync(
                 userId,
@@ -151,7 +151,7 @@ public class CreateTransactionUseCase
                 period.Key.Start,
                 period.Key.End,
                 ct,
-                ETransactionType.Expense);
+                TransactionType.Expense);
 
             var totalProjected = spent + period.Value;
 

@@ -10,7 +10,7 @@ namespace Saldoa.Domain.Entities
             string userId,
             string title,
             string? description,
-            ETransactionType type,
+            TransactionType type,
             decimal totalAmount,
             DateOnly paidOrReceivedAt,
             long categoryId,
@@ -32,7 +32,7 @@ namespace Saldoa.Domain.Entities
         public long Id { get; private set; }
         public string Title { get; private set; } = null!;
         public string? Description { get; private set; }
-        public ETransactionType Type { get; private set; }
+        public TransactionType Type { get; private set; }
         public decimal Amount { get; private set; }
         public DateOnly PaidOrReceivedAt { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }

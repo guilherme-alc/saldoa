@@ -5,6 +5,6 @@ namespace Saldoa.Application.Transactions.ListByMonth;
 public record ListTransactionsByMonthRequest(
     int Year, 
     int Month, 
-    ETransactionType? Type, 
+    TransactionType? Type, 
     int PageNumber = 1, 
     int PageSize = 20);

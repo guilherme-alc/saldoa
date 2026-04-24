@@ -6,7 +6,7 @@ public sealed record CreateTransactionRequest(
     string Title, 
     string? Description, 
     DateOnly PaidOrReceivedAt, 
-    ETransactionType Type, 
+    TransactionType Type, 
     decimal TotalAmount, long 
     CategoryId,
     int? TotalInstallments);

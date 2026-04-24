@@ -9,7 +9,7 @@ public record TransactionResponse(
     long Id,
     string Title,
     string? Description,
-    ETransactionType Type,
+    TransactionType Type,
     decimal Amount,
     DateOnly? PaidOrReceivedAt,
     CategorySummaryResponse Category,

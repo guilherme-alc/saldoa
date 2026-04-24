@@ -57,7 +57,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         string userId,
         DateOnly startDate,
         DateOnly endDate,
-        ETransactionType? type,
+        TransactionType? type,
         int pageNumber,
         int pageSize,
         CancellationToken ct = default)
@@ -111,7 +111,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         DateOnly start,
         DateOnly end,
         CancellationToken ct,
-        ETransactionType? type = ETransactionType.Expense)
+        TransactionType? type = TransactionType.Expense)
     {
         return await dbContext.Transactions
             .Where(t =>
@@ -130,7 +130,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         DateOnly end,
         long excludeTransactionId,
         CancellationToken ct,
-        ETransactionType? type = ETransactionType.Expense)
+        TransactionType? type = TransactionType.Expense)
     {
         return await dbContext.Transactions
             .Where(t =>
