@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using FluentValidation;
+using Saldoa.Domain.Enums;
 
 namespace Saldoa.Application.Transactions.Create;
 
@@ -37,13 +38,13 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
             .InclusiveBetween(min, max)
             .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
 
-        When(x=> x.TotalInstallments.HasValue, () =>
+        When(x => x.TotalInstallments > 1, () =>
         {
-            RuleFor(x => x.TotalInstallments!.Value)
-                .GreaterThan(0)
-                .WithMessage("O total de parcelas deve ser maior que 0");
+            RuleFor(x => x.Type)
+                .Equal(TransactionType.Expense)
+                .WithMessage("Parcelamentos só são permitidos para transações do tipo despesa");
 
-            RuleFor(x => x.TotalInstallments!.Value)
+            RuleFor(x => x.TotalInstallments)
                 .LessThanOrEqualTo(120)
                 .WithMessage("O número máximo de parcelas permitido é 120");
         });

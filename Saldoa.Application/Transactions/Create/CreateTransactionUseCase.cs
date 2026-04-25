@@ -1,12 +1,10 @@
 using Saldoa.Application.Categories.Abstractions;
-using Saldoa.Application.CategoryBudgets.Abstractions;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
 using Saldoa.Application.Transactions.Abstractions;
 using Saldoa.Application.Transactions.Common;
 using Saldoa.Domain.Entities;
 using Saldoa.Domain.Enums;
-using Saldoa.Domain.ValueObjects;
 
 namespace Saldoa.Application.Transactions.Create;
 
@@ -14,18 +12,18 @@ public class CreateTransactionUseCase
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly ICategoryBudgetRepository _categoryBudgetRepository;
     private readonly IUnitOfWork _unit;
-    
+    private readonly TransactionBudgetAnalyzer _transactionBudgetAnalyzer;
+
     public CreateTransactionUseCase(ITransactionRepository transactionRepository, 
         IUnitOfWork unit, 
         ICategoryRepository categoryRepository,
-        ICategoryBudgetRepository categoryBudgetRepository)
+        TransactionBudgetAnalyzer transactionBudgetAnalyzer)
     {
         _transactionRepository = transactionRepository;
         _unit = unit;
         _categoryRepository = categoryRepository;
-        _categoryBudgetRepository = categoryBudgetRepository;
+        _transactionBudgetAnalyzer = transactionBudgetAnalyzer;
     }
 
     public async Task<Result<TransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, string userId, CancellationToken ct)
@@ -35,22 +33,17 @@ public class CreateTransactionUseCase
         if(category == null)
             return Result<TransactionsResponse>.Failure("Categoria não encontrada");
 
-        var totalInstallments = request.TotalInstallments.HasValue && request.TotalInstallments.Value > 0
-            ? request.TotalInstallments.Value
-            : 1;
+        List<BudgetAlert> budgetAlerts = [];
 
-        var installments = BuildInstallments(request, totalInstallments);
+        var installments = InstallmentPlanFactory.Create(request.TotalAmount, request.PaidOrReceivedAt, request.TotalInstallments);
 
         if (request.Type == TransactionType.Expense)
         {
-            var validationResult = await ValidateCategoryBudgetAsync(
+            budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
                 userId,
                 request.CategoryId,
                 installments,
                 ct);
-
-            if (!validationResult.IsSuccess)
-                return Result<TransactionsResponse>.Failure(validationResult.Error!);
         }
 
         var transactions = installments.Select(i =>
@@ -82,99 +75,13 @@ public class CreateTransactionUseCase
                 t.Amount,
                 t.PaidOrReceivedAt,
                 new CategorySummaryResponse(category.Id, category.Name, category.Color),
-                t.InstallmentInfo.TotalInstallments > 1 ? t.InstallmentInfo : null
+                t.InstallmentInfo.IsInstallment ? t.InstallmentInfo : null
             )
         ).ToList();
 
-        return Result<TransactionsResponse>.Success(new TransactionsResponse(response));
-    }
-
-    private static List<InstallmentDraft> BuildInstallments(CreateTransactionRequest request, int totalInstallments)
-    {
-        var (baseValue, remainder) = CalculateInstallments(request.TotalAmount, totalInstallments);
-        var groupId = totalInstallments > 1 ? Guid.CreateVersion7() : (Guid?)null;
-
-        var installments = new List<InstallmentDraft>();
-
-        for (int i = 1; i <= totalInstallments; i++)
-
-        {
-            var amount = i == totalInstallments ? baseValue + remainder : baseValue;
-            var date = request.PaidOrReceivedAt.AddMonths(i - 1);
-
-            var installmentInfo = totalInstallments > 1
-                ? InstallmentInfo.Create(totalInstallments, i, groupId!.Value)
-                : InstallmentInfo.Single();
-
-            installments.Add(new InstallmentDraft(amount, date, installmentInfo));
-        }
-
-        return installments;
-    }
-
-    private async Task<Result> ValidateCategoryBudgetAsync(
-        string userId,
-        long categoryId,
-        List<InstallmentDraft> installments,
-        CancellationToken ct)
-    {
-
-        if (installments.Count == 0)
-            return Result.Success();
-
-        var amountsByBudgetPeriod = new Dictionary<(DateOnly Start, DateOnly End), decimal>();
-
-        foreach (var installment in installments)
-        {
-            var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                userId,
-                categoryId,
-                installment.Date,
-                ct);
-
-            if (budget is null)
-                continue;
-
-            var key = (budget.PeriodStart, budget.PeriodEnd);
-
-            if (!amountsByBudgetPeriod.ContainsKey(key))
-                amountsByBudgetPeriod[key] = 0;
-
-            amountsByBudgetPeriod[key] += installment.Amount;
-        }
-
-        foreach (var period in amountsByBudgetPeriod)
-        {
-            var spent = await _transactionRepository.GetTotalForPeriodAsync(
-                userId,
-                categoryId,
-                period.Key.Start,
-                period.Key.End,
-                ct,
-                TransactionType.Expense);
-
-            var totalProjected = spent + period.Value;
-
-            var budget = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                userId,
-                categoryId,
-                period.Key.Start,
-                ct);
-
-            if (budget is not null && totalProjected > budget.LimitAmount)
-            {
-                return Result.Failure(
-                    $"Limite excedido para o período {period.Key.Start:MM/yyyy}");
-            }
-        }
-
-        return Result.Success();
-    }
-
-    private static (decimal baseValue, decimal remainder) CalculateInstallments(decimal total, int count)
-    {
-        var baseValue = Math.Floor((total / count) * 100) / 100;
-        var remainder = total - (baseValue * count);
-        return (baseValue, remainder);
+        return Result<TransactionsResponse>.Success(new TransactionsResponse(
+            response,
+            budgetAlerts.Count == 0 ? null : budgetAlerts
+        ));
     }
 }

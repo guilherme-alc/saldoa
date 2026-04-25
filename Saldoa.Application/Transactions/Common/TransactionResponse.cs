@@ -16,4 +16,6 @@ public record TransactionResponse(
     InstallmentInfo? InstallmentInfo
 );
 
-public record TransactionsResponse(IEnumerable<TransactionResponse> Transactions);
+public record TransactionsResponse(IEnumerable<TransactionResponse> Transactions, IEnumerable<BudgetAlert>? BudgetAlerts);
+
+public record UpdateTransactionResponse(IEnumerable<BudgetAlert>? BudgetAlerts);

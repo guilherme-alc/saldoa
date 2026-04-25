@@ -5,6 +5,7 @@
         public int TotalInstallments { get; }
         public int InstallmentNumber { get; }
         public Guid? InstallmentGroupId { get; } = null;
+        public bool IsInstallment => TotalInstallments > 1;
 
         private InstallmentInfo(int totalInstallments, int installmentNumber, Guid? installmentGroupId) 
         {
