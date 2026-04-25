@@ -1,4 +1,5 @@
 using FluentValidation;
+using Saldoa.Domain.Enums;
 
 namespace Saldoa.Application.Transactions.Update;
 
@@ -6,51 +7,30 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionReq
 {
     public UpdateTransactionValidator()
     {
-        When(x => x.Title is not null, () =>
-        {
-            RuleFor(x => x.Title!)
-                .Must(n => !string.IsNullOrWhiteSpace(n))
-                .WithMessage("O título da transação precisa ser fornecido")
-                .MaximumLength(100)
-                .WithMessage("O título não pode ultrapassar 100 caracteres");
-        });
+        RuleFor(x => x.Title!)
+            .Must(n => !string.IsNullOrWhiteSpace(n))
+            .WithMessage("O título da transação precisa ser fornecido")
+            .MaximumLength(100)
+            .WithMessage("O título não pode ultrapassar 100 caracteres");
 
-        When(x => x.Description is not null, () =>
-        {
-            RuleFor(x => x.Description!)
-                .MaximumLength(255)
-                .WithMessage("A descrição não pode ultrapassar 255 caracteres");
-        });
+        RuleFor(x => x.Description!)
+            .MaximumLength(255)
+            .WithMessage("A descrição não pode ultrapassar 255 caracteres");
 
-        When(x => x.Type is not null, () =>
-        {
-            RuleFor(x => x.Type)
-                .IsInEnum()
-                .WithMessage("Tipo da transação inválido.");
-        });
-        
-        When(x => x.Amount is not null, () =>
-        {
-            RuleFor(x => x.Amount!)
-                .GreaterThan(0)
-                .WithMessage("O valor da transação deve ser maior que 0");
-        });
-        
-        When(x => x.CategoryId.HasValue, () =>
-        {
-            RuleFor(x => x.CategoryId!.Value)
-                .GreaterThan(0)
-                .WithMessage("O id da categoria é obrigatório");
-        });
+        RuleFor(x => x.Amount!)
+            .GreaterThan(0)
+            .WithMessage("O valor da transação deve ser maior que 0");
+
+        RuleFor(x => x.CategoryId!)
+            .GreaterThan(0)
+            .WithMessage("O id da categoria é obrigatório");
 
         var min = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3));
         var max = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(2));
 
-        When(x => x.PaidOrReceivedAt.HasValue, () =>
-        {
-            RuleFor(x => x.PaidOrReceivedAt!.Value)
-                .InclusiveBetween(min, max)
-                .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
-        });
+
+        RuleFor(x => x.PaidOrReceivedAt)
+            .InclusiveBetween(min, max)
+            .WithMessage($"A data deve estar entre {min:dd/MM/yyyy} e {max:dd/MM/yyyy}.");
     }
 }

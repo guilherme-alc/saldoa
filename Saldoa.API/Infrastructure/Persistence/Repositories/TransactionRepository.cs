@@ -128,7 +128,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         long categoryId,
         DateOnly start,
         DateOnly end,
-        long excludeTransactionId,
+        IReadOnlyCollection<long> excludeTransactionIds,
         CancellationToken ct,
         TransactionType? type = TransactionType.Expense)
     {
@@ -136,7 +136,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .Where(t =>
                 t.UserId == userId &&
                 t.CategoryId == categoryId &&
-                t.Id != excludeTransactionId &&
+                !excludeTransactionIds.Contains(t.Id) &&
                 t.PaidOrReceivedAt >= start &&
                 t.PaidOrReceivedAt <= end &&
                 t.Type == type)
@@ -151,5 +151,12 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
                 t => t.CategoryId == categoryId && 
                      t.UserId == userId,
                 ct);
+    }
+
+    public async Task<List<Transaction>?> GetInstallmentsForUpdateAsync(Guid installmentGroupId, string userId, CancellationToken ct)
+    {
+        return await dbContext.Transactions
+             .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId && t.UserId == userId)
+             .ToListAsync(ct);
     }
 }

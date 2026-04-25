@@ -9,7 +9,7 @@ public static class UpdateTransactionEndpoint
 {
     public static void Map(RouteGroupBuilder group)
     {
-        group.MapPatch("/{id:long}", async (
+        group.MapPut("/{id:long}", async (
             long id,
             UpdateTransactionRequest request,
             UpdateTransactionUseCase useCase,
@@ -28,12 +28,11 @@ public static class UpdateTransactionEndpoint
             if (!result.IsSuccess)
                 return Results.BadRequest(new { error = result.Error });
 
-            return Results.NoContent();
+            return Results.Ok(result.Value);
         })
         .WithSummary("Atualiza uma transação")
         .WithDescription(
-            "Atualiza parcialmente uma transação. Apenas propriedades enviadas com valor diferente de null serão alteradas. " +
-            "Campos opcionais como Description podem ser limpos enviando string vazia."
+            "Atualiza uma transação."
         );;
     }
 }

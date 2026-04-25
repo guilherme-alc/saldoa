@@ -1,8 +1,9 @@
 using Saldoa.Application.Categories.Abstractions;
-using Saldoa.Application.CategoryBudgets.Abstractions;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
 using Saldoa.Application.Transactions.Abstractions;
+using Saldoa.Application.Transactions.Common;
+using Saldoa.Domain.Enums;
 
 namespace Saldoa.Application.Transactions.Update;
 
@@ -10,68 +11,109 @@ public class UpdateTransactionUseCase
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly ICategoryBudgetRepository _categoryBudgetRepository;
     private readonly IUnitOfWork _unit;
-    
-    public UpdateTransactionUseCase(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository, IUnitOfWork unit, ICategoryBudgetRepository categoryBudgetRepository)
+    private readonly TransactionBudgetAnalyzer _transactionBudgetAnalyzer;
+
+    public UpdateTransactionUseCase(
+        ITransactionRepository transactionRepository,
+        ICategoryRepository categoryRepository,
+        IUnitOfWork unit,
+        TransactionBudgetAnalyzer transactionBudgetAnalyzer)
     {
         _transactionRepository = transactionRepository;
         _categoryRepository = categoryRepository;
-        _categoryBudgetRepository = categoryBudgetRepository;
         _unit = unit;
+        _transactionBudgetAnalyzer = transactionBudgetAnalyzer;
     }
-    
-    public async Task<Result> ExecuteAsync(
-        long id, 
+
+    public async Task<Result<UpdateTransactionResponse>> ExecuteAsync(
+        long id,
         UpdateTransactionRequest request,
-        string userId, 
+        string userId,
         CancellationToken ct)
     {
         var transaction = await _transactionRepository.GetByIdForUpdateAsync(id, userId, ct);
         if (transaction is null)
-            return Result.Failure("Transação não encontrada");
-        
-        var finalCategoryId = request.CategoryId ?? transaction.CategoryId;
-        var finalAmount = request.Amount ?? transaction.Amount;
-        var finalDate = request.PaidOrReceivedAt ?? transaction.PaidOrReceivedAt;
+            return Result<UpdateTransactionResponse>.Failure("Transacao nao encontrada");
 
-        var budget = await _categoryBudgetRepository
-            .GetActiveForPeriodAsync(
-                userId,
-                finalCategoryId,
-                finalDate,
-                ct);
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, userId, ct);
+        if (category is null)
+            return Result<UpdateTransactionResponse>.Failure("Categoria nao encontrada");
 
-        if (budget is not null)
+        List<BudgetAlert> budgetAlerts = [];
+
+        if (transaction.Type == TransactionType.Income)
         {
-            var spent = await _transactionRepository
-                .GetTotalForPeriodExcludingAsync(
+            transaction.SetTitle(request.Title);
+            transaction.SetDescription(request.Description);
+            transaction.SetCategoryId(request.CategoryId);
+            transaction.SetAmount(request.Amount);
+            transaction.SetPaidOrReceivedAt(request.PaidOrReceivedAt);
+        }
+        else if (transaction.InstallmentInfo.IsInstallment &&
+            transaction.InstallmentInfo.InstallmentGroupId is not null)
+        {
+            var updateScope = request.UpdateScope ?? TransactionUpdateScope.Single;
+
+            var affectedTransactions = updateScope == TransactionUpdateScope.All
+                ? await _transactionRepository.GetInstallmentsForUpdateAsync(
+                    transaction.InstallmentInfo.InstallmentGroupId.Value,
                     userId,
-                    finalCategoryId,
-                    budget.PeriodStart,
-                    budget.PeriodEnd,
-                    transaction.Id,
-                    ct);
+                    ct)
+                : [transaction];
 
-            if (spent + finalAmount > budget.LimitAmount)
-                return Result.Failure(
-                    "Limite da categoria excedido para o período informado.");
+            if (affectedTransactions is null || affectedTransactions.Count == 0)
+                return Result<UpdateTransactionResponse>.Failure("Parcelas nao encontradas");
+
+            foreach (var affectedTransaction in affectedTransactions)
+            {
+                affectedTransaction.SetTitle(request.Title);
+                affectedTransaction.SetDescription(request.Description);
+                affectedTransaction.SetCategoryId(request.CategoryId);
+                affectedTransaction.SetAmount(request.Amount);
+            }
+
+            var installmentDrafts = affectedTransactions
+                .Select(t => new InstallmentDraft(request.Amount, t.PaidOrReceivedAt, t.InstallmentInfo))
+                .ToList();
+
+            var affectedTransactionIds = affectedTransactions
+                .Select(t => t.Id)
+                .ToList();
+
+            budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
+                userId,
+                request.CategoryId,
+                installmentDrafts,
+                affectedTransactionIds,
+                ct
+            );
         }
-
-        if (request.CategoryId.HasValue)
+        else
         {
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, userId, ct);
-            if (category is null)
-                return Result.Failure("Categoria não encontrada");
+            transaction.SetTitle(request.Title);
+            transaction.SetDescription(request.Description);
+            transaction.SetCategoryId(request.CategoryId);
+            transaction.SetAmount(request.Amount);
+            transaction.SetPaidOrReceivedAt(request.PaidOrReceivedAt);
+
+            var installmentDrafts = new List<InstallmentDraft>
+            {
+                new(request.Amount, request.PaidOrReceivedAt, transaction.InstallmentInfo)
+            };
+
+            budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
+                userId,
+                request.CategoryId,
+                installmentDrafts,
+                [transaction.Id],
+                ct
+            );
         }
-        
-        transaction.SetTitle(request.Title);
-        transaction.SetDescription(request.Description);
-        transaction.SetAmount(request.Amount);
-        transaction.SetPaidOrReceivedAt(request.PaidOrReceivedAt);
-        transaction.SetCategoryId(request.CategoryId);
 
         await _unit.SaveChangesAsync(ct);
-        return Result.Success();
+
+        return Result<UpdateTransactionResponse>.Success(
+            new UpdateTransactionResponse(budgetAlerts.Count == 0 ? null : budgetAlerts));
     }
 }

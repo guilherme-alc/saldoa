@@ -1,4 +1,3 @@
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +30,7 @@ using Saldoa.Application.CategoryBudgets.Update;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Identity.Abstractions;
 using Saldoa.Application.Transactions.Abstractions;
+using Saldoa.Application.Transactions.Common;
 using Saldoa.Application.Transactions.Create;
 using Saldoa.Application.Transactions.Delete;
 using Saldoa.Application.Transactions.GetById;
@@ -38,6 +38,7 @@ using Saldoa.Application.Transactions.ListByCategory;
 using Saldoa.Application.Transactions.ListByMonth;
 using Saldoa.Application.Transactions.ListByPeriod;
 using Saldoa.Application.Transactions.Update;
+using System.Text;
 
 namespace Saldoa.API.Extensions;
 
@@ -154,6 +155,7 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<DeleteCategoryUseCase>();
         builder.Services.AddScoped<ListCategoriesUseCase>();
 
+        builder.Services.AddScoped<TransactionBudgetAnalyzer>();
         builder.Services.AddScoped<CreateTransactionUseCase>();
         builder.Services.AddScoped<GetTransactionByIdUseCase>();
         builder.Services.AddScoped<UpdateTransactionUseCase>();
