@@ -1,6 +1,5 @@
 using Saldoa.Application.Categories.Abstractions;
 using Saldoa.Application.CategoryBudgets.Abstractions;
-using Saldoa.Application.CategoryBudgets.Create;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
 using Saldoa.Application.Transactions.Abstractions;
@@ -98,6 +97,7 @@ public class CreateTransactionUseCase
         var installments = new List<InstallmentDraft>();
 
         for (int i = 1; i <= totalInstallments; i++)
+
         {
             var amount = i == totalInstallments ? baseValue + remainder : baseValue;
             var date = request.PaidOrReceivedAt.AddMonths(i - 1);

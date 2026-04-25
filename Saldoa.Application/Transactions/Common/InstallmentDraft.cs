@@ -1,6 +1,6 @@
 ﻿using Saldoa.Domain.ValueObjects;
 
-namespace Saldoa.Application.CategoryBudgets.Create
+namespace Saldoa.Application.Transactions.Common
 {
     public sealed record InstallmentDraft(
         decimal Amount,
