@@ -12,9 +12,12 @@ public static class EndpointRouteBuilderExtensions
     /// </summary>
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapAuthEndpoints();
-        app.MapCategoriesEndpoint();
-        app.MapTransactionsEndpoint();
-        app.MapCategoryBudgetEndpoints();
+        var api = app.MapGroup("/api");
+        var v1 = api.MapGroup("/v1");
+
+        v1.MapAuthEndpoints();
+        v1.MapCategoriesEndpoint();
+        v1.MapTransactionsEndpoint();
+        v1.MapCategoryBudgetEndpoints();
     }
 }
