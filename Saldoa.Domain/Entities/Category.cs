@@ -9,9 +9,11 @@ namespace Saldoa.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new DomainException("Usuário inválido.");
-            SetName(name);
-            SetDescription(description);
-            SetColor(color);
+
+            Name = EnsureValidName(name);
+            NormalizedName = Name.ToUpperInvariant();
+            Description = EnsureValidDescription(description);
+            Color = EnsureValidColor(color);
             UserId = userId;
             CreatedAt = DateTimeOffset.UtcNow;
         }
@@ -24,25 +26,35 @@ namespace Saldoa.Domain.Entities
         public string UserId { get; private set; } = null!;
         public DateTimeOffset CreatedAt { get; private set; }
         
-        public void SetName(string name)
+        public void Rename(string name)
+        {
+            Name = EnsureValidName(name);
+            NormalizedName = Name.ToUpperInvariant();
+        }
+        private static string EnsureValidName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Nome da categoria é obrigatório.");
 
-            Name = name.Trim();
-            NormalizedName = Name.ToUpperInvariant();
+            return name.Trim();
         }
 
-        public void SetDescription(string? description)
+        public void ChangeDescription(string? description)
         {
-            var d = description?.Trim();
-            Description = string.IsNullOrWhiteSpace(d) ? null : d;
+            Description = EnsureValidDescription(description);
         }
-        
-        public void SetColor(string? color)
+        private static string? EnsureValidDescription(string? description)
         {
-            var c = color?.Trim();
-            Color = string.IsNullOrWhiteSpace(c) ? null : c;
+            return string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        }
+
+        public void ChangeColor(string? color)
+        {
+            Color = EnsureValidColor(color);
+        }
+        private static string? EnsureValidColor(string? color)
+        {
+            return string.IsNullOrWhiteSpace(color) ? null : color.Trim();
         }
     }
 }

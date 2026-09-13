@@ -49,10 +49,10 @@ public class UpdateCategoryBudgetUseCase
                 return Result.Failure(error);
             }
 
-            categoryBudget.SetPeriod(request.PeriodStart, request.PeriodEnd);
+            categoryBudget.ChangePeriod(request.PeriodStart, request.PeriodEnd);
         }
         
-        categoryBudget.SetLimitAmount(request.LimitAmount);
+        categoryBudget.ChangeLimit(request.LimitAmount);
         
         await _unit.SaveChangesAsync(ct);
         return Result.Success();

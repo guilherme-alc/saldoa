@@ -51,11 +51,11 @@ public class UpdateTransactionUseCase
 
         if (transaction.Type == TransactionType.Income)
         {
-            transaction.SetTitle(request.Title);
-            transaction.SetDescription(request.Description);
-            transaction.SetCategoryId(request.CategoryId);
-            transaction.SetAmount(request.Amount);
-            transaction.SetPaidOrReceivedAt(request.PaidOrReceivedAt);
+            transaction.ChangeTitle(request.Title);
+            transaction.ChangeDescription(request.Description);
+            transaction.MoveToCategory(request.CategoryId);
+            transaction.ChangeAmount(request.Amount);
+            transaction.Reschedule(request.PaidOrReceivedAt);
         }
         else if (transaction.InstallmentInfo.IsInstallment &&
             transaction.InstallmentInfo.InstallmentGroupId is not null)
@@ -77,10 +77,10 @@ public class UpdateTransactionUseCase
 
             foreach (var affectedTransaction in affectedTransactions)
             {
-                affectedTransaction.SetTitle(request.Title);
-                affectedTransaction.SetDescription(request.Description);
-                affectedTransaction.SetCategoryId(request.CategoryId);
-                affectedTransaction.SetAmount(request.Amount);
+                affectedTransaction.ChangeTitle(request.Title);
+                affectedTransaction.ChangeDescription(request.Description);
+                affectedTransaction.MoveToCategory(request.CategoryId);
+                affectedTransaction.ChangeAmount(request.Amount);
             }
 
             var installmentDrafts = affectedTransactions
@@ -101,11 +101,11 @@ public class UpdateTransactionUseCase
         }
         else
         {
-            transaction.SetTitle(request.Title);
-            transaction.SetDescription(request.Description);
-            transaction.SetCategoryId(request.CategoryId);
-            transaction.SetAmount(request.Amount);
-            transaction.SetPaidOrReceivedAt(request.PaidOrReceivedAt);
+            transaction.ChangeTitle(request.Title);
+            transaction.ChangeDescription(request.Description);
+            transaction.MoveToCategory(request.CategoryId);
+            transaction.ChangeAmount(request.Amount);
+            transaction.Reschedule(request.PaidOrReceivedAt);
 
             var installmentDrafts = new List<InstallmentDraft>
             {

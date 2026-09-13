@@ -13,7 +13,7 @@ public class CreateCategoryBudgetValidator : AbstractValidator<CreateCategoryBud
         
         RuleFor(x => x.LimitAmount)
             .GreaterThan(0)
-            .WithMessage("Limit da categoria deve ser maior que 0");
+            .WithMessage("Limite da categoria deve ser maior que 0");
         
         RuleFor(x => x)
             .Must(x =>

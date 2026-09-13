@@ -16,7 +16,7 @@ namespace Saldoa.Domain.ValueObjects
             InstallmentGroupId = installmentGroupId;
         }
 
-        public static InstallmentInfo Single()
+        public static InstallmentInfo SinglePayment()
         {
             return new InstallmentInfo(
                 totalInstallments: 1,
@@ -25,7 +25,7 @@ namespace Saldoa.Domain.ValueObjects
             );
         }
 
-        public static InstallmentInfo Create(int totalInstallments, int installmentNumber, Guid? installmentGroupId)
+        public static InstallmentInfo Installment(int totalInstallments, int installmentNumber, Guid? installmentGroupId)
         {
             if (totalInstallments <= 1)
                 throw new DomainException("Parcelamento deve ser maior que 1.");

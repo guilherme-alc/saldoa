@@ -11,9 +11,10 @@ namespace Saldoa.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new DomainException("Usuário inválido.");
-            SetCategoryId(categoryId);
-            SetPeriod(periodStart, periodEnd);
-            SetLimitAmount(limitAmount);
+
+            CategoryId = EnsureValidCategoryId(categoryId);
+            (PeriodStart, PeriodEnd) = EnsureValidPeriod(periodStart, periodEnd);
+            LimitAmount = EnsureValidLimit(limitAmount);
             UserId = userId;
             CreatedAt = DateTimeOffset.UtcNow;
         }
@@ -26,29 +27,36 @@ namespace Saldoa.Domain.Entities
         public DateTimeOffset CreatedAt { get; private set; }
         public Category Category { get; private set; } = default!;
     
-        public void SetCategoryId(long categoryId)
+        private static long EnsureValidCategoryId(long categoryId)
         {
             if (categoryId <= 0) 
                 throw new DomainException("Categoria inválida.");
         
-            CategoryId = categoryId;
+            return categoryId;
         }
     
-        public void SetLimitAmount(decimal limitAmount)
+        public void ChangeLimit(decimal limitAmount)
         {
-            if (limitAmount < 0)
-                throw new DomainException("O limite não pode ser negativo.");
+            LimitAmount = EnsureValidLimit(limitAmount);
+        }
+        private static decimal EnsureValidLimit(decimal limitAmount)
+        {
+            if (limitAmount <= 0)
+                throw new DomainException("Limite da categoria deve ser maior que 0.");
 
-            LimitAmount = limitAmount;
+            return limitAmount;
         }
 
-        public void SetPeriod(DateOnly start, DateOnly end)
+        public void ChangePeriod(DateOnly start, DateOnly end)
+        {
+            (PeriodStart, PeriodEnd) = EnsureValidPeriod(start, end);
+        }
+        private static (DateOnly start, DateOnly end) EnsureValidPeriod(DateOnly start, DateOnly end)
         {
             if (start > end)
                 throw new DomainException("O início do período não pode ser maior que o fim.");
 
-            PeriodStart = start;
-            PeriodEnd = end;
+            return (start, end);
         }
     }
 }

@@ -7,8 +7,8 @@ public class UpdateCategoryBudgetValidator : AbstractValidator<UpdateCategoryBud
     public UpdateCategoryBudgetValidator()
     {
         RuleFor(x => x.LimitAmount)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Limite não pode ser negativo");
+            .GreaterThan(0)
+            .WithMessage("Limite da categoria deve ser maior que 0");
 
         RuleFor(x => x)
             .Must(x =>

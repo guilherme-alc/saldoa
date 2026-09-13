@@ -16,7 +16,7 @@ namespace Saldoa.Application.Transactions.Common
             if (totalInstallments == 1)
             {
                 return new List<InstallmentDraft>{
-                    new(totalAmount, firstDate, InstallmentInfo.Single())
+                    new(totalAmount, firstDate, InstallmentInfo.SinglePayment())
                 };
             }
 
@@ -33,7 +33,7 @@ namespace Saldoa.Application.Transactions.Common
                 installments.Add(new InstallmentDraft(
                     amount, 
                     date, 
-                    InstallmentInfo.Create(totalInstallments.Value, i, groupId)
+                    InstallmentInfo.Installment(totalInstallments.Value, i, groupId)
                 ));
             }
 

@@ -34,9 +34,9 @@ public class UpdateCategoryUseCase
             return Result.Failure(error);
         }
             
-        category.SetName(request.Name);
-        category.SetDescription(request.Description);
-        category.SetColor(request.Color);
+        category.Rename(request.Name);
+        category.ChangeDescription(request.Description);
+        category.ChangeColor(request.Color);
         
         await _unit.SaveChangesAsync(ct);
         return Result.Success();

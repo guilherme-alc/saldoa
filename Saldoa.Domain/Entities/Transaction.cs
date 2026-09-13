@@ -19,14 +19,15 @@ namespace Saldoa.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new DomainException("Usuário inválido.");
+
             UserId = userId;
-            InitTitle(title);
-            SetDescription(description);
-            Type = type;
-            SetAmount(totalAmount);
+            Title = EnsureValidTitle(title);
+            Description = EnsureValidDescription(description);
+            Amount = EnsureValidAmount(totalAmount);
+            Type = EnsureValidType(type);
             PaidOrReceivedAt = paidOrReceivedAt;
             CreatedAt = DateTimeOffset.UtcNow;
-            CategoryId = categoryId;
+            CategoryId = EnsureValidCategoryId(categoryId);
             InstallmentInfo = installmentInfo ?? throw new DomainException(nameof(installmentInfo));   
         }
 
@@ -42,52 +43,60 @@ namespace Saldoa.Domain.Entities
         public InstallmentInfo InstallmentInfo { get; private set; } = null!;
         public string UserId { get; private set; } = null!;
 
-        public void InitTitle(string title)
+        public void ChangeTitle(string title)
+        {
+            Title = EnsureValidTitle(title);
+        }
+        private static string EnsureValidTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new DomainException("Título é obrigatório.");
-
-            Title = title.Trim();
-        }
-        public void SetTitle(string? title)
-        {
-            if (title is null)
-                return;
-            var t = title.Trim();
-            if (string.IsNullOrWhiteSpace(t))
-                return;
-            Title = t;
+            return title.Trim();
         }
 
-        public void SetDescription(string? description)
+        public void ChangeDescription(string? description)
         {
-            if (description == null)
-                return;
-
-            var d = description?.Trim();
-            Description = string.IsNullOrWhiteSpace(d) ? null : d;
+            Description = EnsureValidDescription(description);
+        }
+        private static string? EnsureValidDescription(string? description)
+        {
+            return string.IsNullOrWhiteSpace(description) ? null : description.Trim();
         }
 
-        public void SetAmount(decimal? amount)
+        public void ChangeAmount(decimal amount)
         {
-            if (amount.HasValue)
-                Amount = Math.Abs(amount.Value);
+            Amount = EnsureValidAmount(amount);
+        }
+        private static decimal EnsureValidAmount(decimal amount)
+        {
+            if (amount <= 0)
+                throw new DomainException("O valor da transação deve ser maior que 0.");
+
+            return amount;
         }
 
-        public void SetPaidOrReceivedAt(DateOnly? paidOrReceivedAt)
+        public void Reschedule(DateOnly paidOrReceivedAt)
         {
-            if (paidOrReceivedAt.HasValue)
-                PaidOrReceivedAt = paidOrReceivedAt.Value;
+            PaidOrReceivedAt = paidOrReceivedAt;
         }
 
-        public void SetCategoryId(long? categoryId)
+        public void MoveToCategory(long categoryId)
         {
-            if (!categoryId.HasValue)
-                return;
-
-            if (categoryId.Value <= 0)
+            CategoryId = EnsureValidCategoryId(categoryId);
+        }
+        private static long EnsureValidCategoryId(long categoryId)
+        {
+            if (categoryId <= 0)
                 throw new DomainException("Categoria inválida.");
-            CategoryId = categoryId.Value;
+
+            return categoryId;
+        }
+
+        private static TransactionType EnsureValidType(TransactionType type)
+        {
+            if (!Enum.IsDefined(type))
+                throw new DomainException("Tipo da transação inválido.");
+            return type;
         }
     }
 }
