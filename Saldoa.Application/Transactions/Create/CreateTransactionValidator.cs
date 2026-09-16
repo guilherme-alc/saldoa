@@ -19,7 +19,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionReq
 
         RuleFor(x => x.Type)
             .IsInEnum()
-            .WithMessage("Tipo da transação inválido.");
+            .WithMessage("Tipo da transação inválido. Valores válidos: expense, income.");
 
         RuleFor(x => x.TotalAmount)
             .GreaterThan(0)

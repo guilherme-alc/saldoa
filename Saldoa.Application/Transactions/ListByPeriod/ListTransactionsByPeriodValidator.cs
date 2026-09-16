@@ -28,7 +28,7 @@ public class ListTransactionsByPeriodValidator : AbstractValidator<ListTransacti
         {
             RuleFor(x => x.Type!.Value)
                 .IsInEnum()
-                .WithMessage("Tipo da transação inválido.");
+                .WithMessage("Tipo da transação inválido. Valores válidos: expense, income.");
         });
 
         When(x => x.YearMonth is not null, () =>
