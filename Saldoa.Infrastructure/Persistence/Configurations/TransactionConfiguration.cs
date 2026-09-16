@@ -30,7 +30,7 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .HasColumnName("type")
                 .HasConversion<short>()
                 .IsRequired()
-                .HasComment("1 = Deposit, 2 = Withdraw");
+                .HasComment("1 = Expense, 2 = Income");
 
             builder.Property(t => t.Amount)
                 .HasColumnName("amount")

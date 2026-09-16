@@ -59,7 +59,7 @@ internal static class CreateTransactionEndpoints
         .WithSummary("Cria nova transação")
         .WithDescription(
             "Cria nova categoria Título (obrigatório); Descrição (opcionail); Data de Pagamento ou Recebimento (opcionail); " +
-            "Tipo da transação (obrigatório): 1 = Despesa, 2 = Renda; Quantia (obrigatório); Id da categoria (obrigatório)"
+            "Tipo da transação (obrigatório): expense = Despesa, income = Renda; Quantia (obrigatório); Id da categoria (obrigatório)"
         );
     }
 }

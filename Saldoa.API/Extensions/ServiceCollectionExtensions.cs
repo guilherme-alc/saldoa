@@ -8,11 +8,27 @@ using Saldoa.Application;
 using Saldoa.Infrastructure;
 using Saldoa.Infrastructure.Auth;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Saldoa.API.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
+    internal static WebApplicationBuilder AddJsonOptions(this WebApplicationBuilder builder)
+    {
+
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+
+            options.SerializerOptions.Converters.Add(
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+        });
+
+        return builder;
+    }
+
     internal static WebApplicationBuilder AddOpenApi(this WebApplicationBuilder builder)
     {
         builder.Services.AddOpenApi(options =>
