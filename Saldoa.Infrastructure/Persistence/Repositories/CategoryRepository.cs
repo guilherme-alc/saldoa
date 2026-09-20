@@ -17,19 +17,19 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
         dbContext.Categories.Remove(category);
     }
 
-    public async Task<Category?> GetByIdAsync(long id, string userId, CancellationToken ct)
+    public async Task<Category?> GetByIdAsync(long id, Guid workspaceId, CancellationToken ct)
     {
         var category = await dbContext.Categories
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, ct);
+            .FirstOrDefaultAsync(c => c.Id == id && c.WorkspaceId == workspaceId, ct);
 
         return category;
     }
     
-    public async Task<Category?> GetByIdForUpdateAsync(long id, string userId, CancellationToken ct)
+    public async Task<Category?> GetByIdForUpdateAsync(long id, Guid workspaceId, CancellationToken ct)
     {
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, ct);
+            .FirstOrDefaultAsync(c => c.Id == id && c.WorkspaceId == workspaceId, ct);
 
         return category;
     }
@@ -37,18 +37,18 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
     public async Task<PagedResult<Category>> ListAsync(
         int pageNumber, 
         int pageSize,
-        string userId,
+        Guid workspaceId,
         CancellationToken ct)
     {
         var query = dbContext
             .Categories
             .AsNoTracking()
-            .Where(c => c.UserId == userId);
+            .Where(c => c.WorkspaceId == workspaceId);
 
         var total = await query.CountAsync(ct);
         
         var data = await query
-            .OrderBy(c => c.Name) // ou CreatedAt, ou Id
+            .OrderBy(c => c.Name)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
@@ -56,12 +56,12 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
         return new PagedResult<Category>(data, total, pageNumber, pageSize);
     }
 
-    public Task<bool> ExistsAsync(string userId, string name, CancellationToken ct)
+    public Task<bool> ExistsAsync(Guid workspaceId, string name, CancellationToken ct)
     {
         var nameNormalized = name.Trim().ToUpperInvariant();
         
         return dbContext.Categories.AnyAsync(
-            c => c.UserId == userId && c.NormalizedName == nameNormalized,
+            c => c.WorkspaceId == workspaceId && c.NormalizedName == nameNormalized,
             ct);
     }
 }
