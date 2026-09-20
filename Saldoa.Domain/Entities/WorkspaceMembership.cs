@@ -26,6 +26,7 @@ namespace Saldoa.Domain.Entities
         public string UserId { get; private set; } = null!;
         public WorkspaceRole Role { get; private set; }
         public DateTimeOffset JoinedAt { get; private set; }
+        public Workspace Workspace { get; private set; } = null!;
 
         internal void ChangeRole(WorkspaceRole role) => Role = EnsureValidRole(role);
 
