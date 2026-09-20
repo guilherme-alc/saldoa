@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Saldoa.Infrastructure.Identity;
 using Saldoa.Domain.Entities;
 
 namespace Saldoa.Infrastructure.Persistence.Configurations
@@ -36,8 +35,8 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .IsRequired(false)
                 .HasMaxLength(12);
 
-            builder.Property(x => x.UserId)
-                .HasColumnName("user_id")
+            builder.Property(x => x.WorkspaceId)
+                .HasColumnName("workspace_id")
                 .IsRequired();
 
             builder.Property(c => c.CreatedAt)
@@ -45,15 +44,15 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
-            builder.HasOne<ApplicationUser>()
+            builder.HasOne<Workspace>()
                .WithMany()
-               .HasForeignKey(c => c.UserId)
-               .HasConstraintName("fk_categories_user")
+               .HasForeignKey(c => c.WorkspaceId)
+               .HasConstraintName("fk_categories_workspace")
                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(c => new { c.UserId, c.NormalizedName })
+            builder.HasIndex(c => new { c.WorkspaceId, c.NormalizedName })
                 .IsUnique()
-                .HasDatabaseName("ux_categories_user_normalized_name");
+                .HasDatabaseName("ux_categories_workspace_normalized_name");
         }
     }
 }

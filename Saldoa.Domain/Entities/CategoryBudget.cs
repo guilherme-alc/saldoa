@@ -7,20 +7,21 @@ namespace Saldoa.Domain.Entities
     {
         private CategoryBudget() { }
 
-        public CategoryBudget(long categoryId, DateOnly periodStart, DateOnly periodEnd, decimal limitAmount, string userId)
+        public CategoryBudget(long categoryId, DateOnly periodStart, DateOnly periodEnd, decimal limitAmount, Guid workspaceId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new DomainException("Usuário inválido.");
+            if (workspaceId == Guid.Empty)
+                throw new DomainException("Workspace inválido.");
 
             CategoryId = EnsureValidCategoryId(categoryId);
             (PeriodStart, PeriodEnd) = EnsureValidPeriod(periodStart, periodEnd);
             LimitAmount = EnsureValidLimit(limitAmount);
-            UserId = userId;
+            WorkspaceId = workspaceId;
             CreatedAt = DateTimeOffset.UtcNow;
         }
         public long Id { get; }
         public long CategoryId { get; private set; }
         public string UserId { get; private set; } = null!;
+        public Guid WorkspaceId { get; private set; }
         public DateOnly PeriodStart { get; private set; }
         public DateOnly PeriodEnd { get; private set; }
         public decimal LimitAmount { get; private set; }

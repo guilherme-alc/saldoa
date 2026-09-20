@@ -5,16 +5,16 @@ namespace Saldoa.Domain.Entities
     public class Category
     {
         private Category() { }
-        public Category(string userId, string name, string? description, string? color)
+        public Category(Guid workspaceId, string name, string? description, string? color)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new DomainException("Usuário inválido.");
+            if (workspaceId == Guid.Empty)
+                throw new DomainException("Workspace inválido.");
 
             Name = EnsureValidName(name);
             NormalizedName = Name.ToUpperInvariant();
             Description = EnsureValidDescription(description);
             Color = EnsureValidColor(color);
-            UserId = userId;
+            WorkspaceId = workspaceId;
             CreatedAt = DateTimeOffset.UtcNow;
         }
 
@@ -23,7 +23,7 @@ namespace Saldoa.Domain.Entities
         public string NormalizedName { get; private set; } = null!;
         public string? Description { get; private set; }
         public string? Color { get; private set; }
-        public string UserId { get; private set; } = null!;
+        public Guid WorkspaceId { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
         
         public void Rename(string name)

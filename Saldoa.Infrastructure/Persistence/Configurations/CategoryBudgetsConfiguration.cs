@@ -17,8 +17,8 @@ public class CategoryBudgetsConfiguration
         builder.Property(c => c.Id)
             .HasColumnName("id");
 
-        builder.Property(c => c.UserId)
-            .HasColumnName("user_id")
+        builder.Property(c => c.WorkspaceId)
+            .HasColumnName("workspace_id")
             .IsRequired();
 
         builder.Property(c => c.CategoryId)
@@ -51,15 +51,15 @@ public class CategoryBudgetsConfiguration
             .HasConstraintName("fk_category_budgets_category")
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<ApplicationUser>()
+        builder.HasOne<Workspace>()
             .WithMany()
-            .HasForeignKey(c => c.UserId)
-            .HasConstraintName("fk_category_budgets_user")
+            .HasForeignKey(c => c.WorkspaceId)
+            .HasConstraintName("fk_category_budgets_workspace")
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(c => new 
         { 
-            c.UserId, 
+            c.WorkspaceId, 
             c.CategoryId, 
             c.PeriodStart, 
             c.PeriodEnd 

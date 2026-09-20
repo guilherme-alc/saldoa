@@ -64,15 +64,15 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .HasFilter("installment_group_id IS NOT NULL");
             });
 
-            builder.Property(t => t.UserId)
-                .HasColumnName("user_id")
+            builder.Property(t => t.CreatedByUserId)
+                .HasColumnName("created_by_id")
                 .IsRequired();
 
-            builder.HasOne<ApplicationUser>()
+            builder.HasOne<Workspace>()
                .WithMany()
-               .HasForeignKey(t => t.UserId)
-               .HasConstraintName("fk_transactions_user")
-               .OnDelete(DeleteBehavior.Cascade);
+               .HasForeignKey(t => t.WorkspaceId)
+               .HasConstraintName("fk_transactions_workspace")
+               .OnDelete(DeleteBehavior.SetNull);
             
             builder.Property(t => t.CategoryId)
                 .HasColumnName("category_id")
@@ -86,7 +86,7 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(t => new
             {
-                t.UserId,
+                t.WorkspaceId,
                 t.PaidOrReceivedAt
             });
         }

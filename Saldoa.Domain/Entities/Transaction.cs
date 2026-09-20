@@ -8,19 +8,23 @@ namespace Saldoa.Domain.Entities
     {
         private Transaction() { }
         public Transaction(
-            string userId,
+            Guid workspaceId,
             string title,
             string? description,
             TransactionType type,
             decimal totalAmount,
             DateOnly paidOrReceivedAt,
             long categoryId,
-            InstallmentInfo installmentInfo)
+            InstallmentInfo installmentInfo,
+            string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new DomainException("Usuário inválido.");
 
-            UserId = userId;
+            if (workspaceId == Guid.Empty)
+                throw new DomainException("Workspace inválido.");
+
+            CreatedByUserId = userId;
             Title = EnsureValidTitle(title);
             Description = EnsureValidDescription(description);
             Amount = EnsureValidAmount(totalAmount);
@@ -41,7 +45,8 @@ namespace Saldoa.Domain.Entities
         public long CategoryId { get; private set; }
         public Category Category { get; private set; } = null!;
         public InstallmentInfo InstallmentInfo { get; private set; } = null!;
-        public string UserId { get; private set; } = null!;
+        public string CreatedByUserId { get; private set; } = null!;
+        public Guid WorkspaceId { get; private set; }
 
         public void ChangeTitle(string title)
         {
