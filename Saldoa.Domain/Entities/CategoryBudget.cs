@@ -20,7 +20,6 @@ namespace Saldoa.Domain.Entities
         }
         public long Id { get; }
         public long CategoryId { get; private set; }
-        public string UserId { get; private set; } = null!;
         public Guid WorkspaceId { get; private set; }
         public DateOnly PeriodStart { get; private set; }
         public DateOnly PeriodEnd { get; private set; }

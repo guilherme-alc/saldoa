@@ -24,6 +24,7 @@ namespace Saldoa.Domain.Entities
             if (workspaceId == Guid.Empty)
                 throw new DomainException("Workspace inválido.");
 
+            WorkspaceId = workspaceId;
             CreatedByUserId = userId;
             Title = EnsureValidTitle(title);
             Description = EnsureValidDescription(description);

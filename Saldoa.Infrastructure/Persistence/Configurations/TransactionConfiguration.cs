@@ -68,11 +68,21 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .HasColumnName("created_by_id")
                 .IsRequired();
 
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(t => t.CreatedByUserId)
+                .HasConstraintName("fk_transactions_created_by_user")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(t => t.WorkspaceId)
+                .HasColumnName("workspace_id")
+                .IsRequired();
+
             builder.HasOne<Workspace>()
                .WithMany()
                .HasForeignKey(t => t.WorkspaceId)
                .HasConstraintName("fk_transactions_workspace")
-               .OnDelete(DeleteBehavior.SetNull);
+               .OnDelete(DeleteBehavior.Cascade);
             
             builder.Property(t => t.CategoryId)
                 .HasColumnName("category_id")
