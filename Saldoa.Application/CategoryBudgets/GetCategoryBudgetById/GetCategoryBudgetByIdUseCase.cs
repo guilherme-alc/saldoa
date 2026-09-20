@@ -16,9 +16,9 @@ public class GetCategoryBudgetByIdUseCase
         _transactionRepository = transactionRepository;
     }
 
-    public async Task<Result<CategoryBudgetDetailsResponse>> ExecuteAsync(string userId, long categoryBudgetId, CancellationToken ct)
+    public async Task<Result<CategoryBudgetDetailsResponse>> ExecuteAsync(Guid workspaceId, long categoryBudgetId, CancellationToken ct)
     {
-        var categoryBudget = await _categoryBudgetRepository.GetByIdAsync(categoryBudgetId, userId, ct);
+        var categoryBudget = await _categoryBudgetRepository.GetByIdAsync(categoryBudgetId, workspaceId, ct);
         
         if(categoryBudget is null)
         {
@@ -27,7 +27,7 @@ public class GetCategoryBudgetByIdUseCase
         }
 
         var total = await _transactionRepository.GetTotalForPeriodAsync(
-            userId, 
+            workspaceId, 
             categoryBudget.CategoryId, 
             categoryBudget.PeriodStart, 
             categoryBudget.PeriodEnd, 

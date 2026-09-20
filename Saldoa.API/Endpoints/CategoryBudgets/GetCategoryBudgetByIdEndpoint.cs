@@ -1,7 +1,5 @@
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.CategoryBudgets.GetCategoryBudgetById;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.CategoryBudgets;
 
@@ -11,14 +9,12 @@ internal static class GetCategoryBudgetByIdEndpoint
     {
         categoryBudgetsGroup.MapGet("/{id:long:min(1)}", 
             async Task<IResult> (
+                Guid workspaceId,
                 long id,
                 GetCategoryBudgetByIdUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(userId, id, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, id, ct);
 
                 if (!result.IsSuccess)
                 {

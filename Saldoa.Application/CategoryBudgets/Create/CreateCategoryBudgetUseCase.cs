@@ -17,10 +17,10 @@ public class CreateCategoryBudgetUseCase
         _unit = unit;
     }
     
-    public async Task<Result<CategoryBudgetResponse>> ExecuteAsync(string userId, CreateCategoryBudgetRequest request, CancellationToken ct)
+    public async Task<Result<CategoryBudgetResponse>> ExecuteAsync(Guid workspaceId, CreateCategoryBudgetRequest request, CancellationToken ct)
     {
         if (await _categoryBudgetRepository.ExistsForPeriodAsync(
-                userId, 
+                workspaceId, 
                 request.CategoryId, 
                 request.PeriodStart,
                 request.PeriodEnd, ct))
@@ -29,7 +29,7 @@ public class CreateCategoryBudgetUseCase
             return Result<CategoryBudgetResponse>.Failure(error);
         }
 
-        var categoryBudget = new CategoryBudget(request.CategoryId, request.PeriodStart, request.PeriodEnd, request.LimitAmount, userId);
+        var categoryBudget = new CategoryBudget(request.CategoryId, request.PeriodStart, request.PeriodEnd, request.LimitAmount, workspaceId);
 
         await _categoryBudgetRepository.AddAsync(categoryBudget, ct);
         await _unit.SaveChangesAsync(ct);

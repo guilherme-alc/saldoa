@@ -16,9 +16,9 @@ public class UpdateCategoryBudgetUseCase
         _unit = unit;
     }
 
-    public async Task<Result> ExecuteAsync(string userId, long categoryBudgetId, UpdateCategoryBudgetRequest request, CancellationToken ct)
+    public async Task<Result> ExecuteAsync(Guid workspaceId, long categoryBudgetId, UpdateCategoryBudgetRequest request, CancellationToken ct)
     {
-        var categoryBudget = await _categoryBudgetRepository.GetByIdForUpdateAsync(categoryBudgetId, userId, ct);
+        var categoryBudget = await _categoryBudgetRepository.GetByIdForUpdateAsync(categoryBudgetId, workspaceId, ct);
         
         if (categoryBudget == null)
         {
@@ -36,7 +36,7 @@ public class UpdateCategoryBudgetUseCase
         if (request.PeriodStart != categoryBudget.PeriodStart || request.PeriodEnd != categoryBudget.PeriodEnd)
         {
             var exists = await _categoryBudgetRepository.ExistsForPeriodAsync(
-                userId,
+                workspaceId,
                 categoryBudget.CategoryId,
                 categoryBudget.Id,
                 request.PeriodStart,

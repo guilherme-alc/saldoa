@@ -15,9 +15,14 @@ internal static class EndpointRouteBuilderExtensions
         var api = endpoints.MapGroup("/api");
         var v1 = api.MapGroup("/v1");
 
+        var workspacesGroup = v1.MapGroup("/workspaces");
+
+        var workspaceScope = workspacesGroup
+            .MapGroup("/{workspaceId:guid}");
+
         v1.MapAuthEndpoints();
-        v1.MapCategoryEndpoints();
-        v1.MapTransactionEndpoints();
-        v1.MapCategoryBudgetEndpoints();
+        workspaceScope.MapCategoryEndpoints();
+        workspaceScope.MapTransactionEndpoints();
+        workspaceScope.MapCategoryBudgetEndpoints();
     }
 }

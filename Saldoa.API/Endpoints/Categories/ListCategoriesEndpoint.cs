@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using FluentValidation;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Categories.List;
 
 namespace Saldoa.API.Endpoints.Categories;
@@ -11,10 +9,10 @@ internal static class ListCategoriesEndpoint
     {
         categoriesGroup.MapGet("/", 
             async Task<IResult> (
+                Guid workspaceId,
                 [AsParameters] ListCategoriesRequest request,
                 IValidator<ListCategoriesRequest> validator,
                 ListCategoriesUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -33,9 +31,7 @@ internal static class ListCategoriesEndpoint
                     );
                 }
 
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(userId, request.PageNumber, request.PageSize, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, request.PageNumber, request.PageSize, ct);
 
                 return TypedResults.Ok(result);
             }

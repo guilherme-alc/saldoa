@@ -16,9 +16,9 @@ public class DeleteCategoryBudgetUseCase
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result> ExecuteAsync(string userId, long categoryBudgetId, CancellationToken ct)
+    public async Task<Result> ExecuteAsync(Guid workspaceId, long categoryBudgetId, CancellationToken ct)
     {
-        var categoryBudget = await _categoryBudgetRepository.GetByIdForUpdateAsync(categoryBudgetId, userId, ct);
+        var categoryBudget = await _categoryBudgetRepository.GetByIdForUpdateAsync(categoryBudgetId, workspaceId, ct);
         
         if(categoryBudget is null)
         {

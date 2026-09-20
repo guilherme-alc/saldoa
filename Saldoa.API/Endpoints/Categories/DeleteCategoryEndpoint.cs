@@ -1,7 +1,5 @@
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Categories.Delete;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Categories;
 
@@ -11,14 +9,12 @@ internal static class DeleteCategoryEndpoint
     {
         categoriesGroup.MapDelete("/{id:long:min(1)}", 
             async Task<IResult> (
+                Guid workspaceId,
                 long id,
                 DeleteCategoryUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
-            {
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(id, userId, ct);
+            {      
+                var result = await useCase.ExecuteAsync(id, workspaceId, ct);
             
                 if (!result.IsSuccess)
                 {

@@ -13,9 +13,9 @@ public class GetTransactionByIdUseCase
         _transactionRepository =  transactionRepository;
     }
     
-    public async Task<Result<TransactionResponse>> ExecuteAsync(long id, string userId, CancellationToken ct)
+    public async Task<Result<TransactionResponse>> ExecuteAsync(long id, Guid workspaceId, CancellationToken ct)
     {
-        var transaction = await _transactionRepository.GetByIdWithCategoryAsync(id, userId, ct);
+        var transaction = await _transactionRepository.GetByIdWithCategoryAsync(id, workspaceId, ct);
 
         if (transaction is null)
         {

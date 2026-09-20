@@ -16,9 +16,9 @@ public class UpdateCategoryUseCase
          _unit = unit;
     }
 
-    public async Task<Result> ExecuteAsync(long id, UpdateCategoryRequest request, string userId, CancellationToken ct)
+    public async Task<Result> ExecuteAsync(long id, UpdateCategoryRequest request, Guid workspaceId, CancellationToken ct)
     {
-        var category = await _categoryRepository.GetByIdForUpdateAsync(id, userId, ct);
+        var category = await _categoryRepository.GetByIdForUpdateAsync(id, workspaceId, ct);
 
         if (category == null)
         {
@@ -28,7 +28,7 @@ public class UpdateCategoryUseCase
 
         var nameNormalized = request.Name.Trim().ToUpperInvariant();
         if (nameNormalized != category.NormalizedName 
-            && await _categoryRepository.ExistsAsync(userId, request.Name, ct))
+            && await _categoryRepository.ExistsAsync(workspaceId, request.Name, ct))
         {
             var error = CategoryErrors.AlreadyExists(request.Name);
             return Result.Failure(error);

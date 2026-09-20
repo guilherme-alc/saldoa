@@ -15,13 +15,13 @@ public class GetCategoryBudgetsByCategoryUseCase
     }
 
     public async Task<Result<PagedResult<CategoryBudgetResponse>>> ExecuteAsync(
-        string userId, 
+        Guid workspaceId, 
         long categoryId, 
         GetCategoryBudgetsByCategoryRequest request, 
         CancellationToken ct)
     {
         var data = await _categoryBudgetRepository.GetByCategoryAsync(
-            userId, 
+            workspaceId, 
             categoryId, 
             request.PageNumber, 
             request.PageSize, 

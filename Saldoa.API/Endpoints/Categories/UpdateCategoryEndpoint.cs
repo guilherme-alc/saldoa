@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Categories.Update;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Categories;
 
@@ -12,11 +10,11 @@ internal static class UpdateCategoryEndpoint
     {
         categoriesGroup.MapPut("/{id:long}", 
             async Task<IResult> (
+                Guid workspaceId,
                 long id,
                 UpdateCategoryRequest request,
                 UpdateCategoryUseCase useCase,
                 IValidator<UpdateCategoryRequest> validator,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -35,9 +33,7 @@ internal static class UpdateCategoryEndpoint
                     );
                 }
 
-                var userId = user.GetUserId();
-
-                var result = await useCase.ExecuteAsync(id, request, userId, ct);
+                var result = await useCase.ExecuteAsync(id, request, workspaceId, ct);
             
                 if (!result.IsSuccess)
                 {

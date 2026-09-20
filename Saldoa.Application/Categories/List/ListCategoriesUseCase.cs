@@ -14,9 +14,9 @@ public class ListCategoriesUseCase
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<PagedResult<CategoryResponse>> ExecuteAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+    public async Task<PagedResult<CategoryResponse>> ExecuteAsync(Guid workspaceId, int pageNumber, int pageSize, CancellationToken ct)
     {
-        var data = await _categoryRepository.ListAsync(pageNumber, pageSize, userId, ct);
+        var data = await _categoryRepository.ListAsync(pageNumber, pageSize, workspaceId, ct);
         
         var categoriesResponse = data.Items
             .Select(c => new CategoryResponse(c.Id, c.Name, c.Description, c.Color)).ToList();

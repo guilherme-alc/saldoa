@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.CategoryBudgets.ListCategoryBudgets;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.CategoryBudgets;
 
@@ -11,20 +9,18 @@ internal static class ListCategoryBudgetsEndpoint
     internal static void Map(RouteGroupBuilder categoryBudgetsGroup)
     {
         categoryBudgetsGroup.MapGet("/", 
-            async Task<IResult> (            
+            async Task<IResult> (       
+                Guid workspaceId,
                 [AsParameters] ListCategoryBudgetsRequest request,
                 IValidator<ListCategoryBudgetsRequest> validator,
                 ListCategoryBudgetsUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
                 if (!validation.IsValid)
                     return Results.BadRequest(validation.Errors);
             
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(userId, request, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
 
                 if (!result.IsSuccess)
                 {

@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Transactions.ListByPeriod;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
@@ -12,10 +10,10 @@ internal static class ListTransactionsByPeriodEndpoint
     {
         transactionsGroup.MapGet("/", 
             async Task<IResult> (
+                Guid workspaceId,
                 [AsParameters] ListTransactionsByPeriodRequest request,
                 IValidator<ListTransactionsByPeriodRequest> validator,
                 ListTransactionsByPeriodUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -34,9 +32,7 @@ internal static class ListTransactionsByPeriodEndpoint
                     );
                 }
 
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(userId, request, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
 
                 if (!result.IsSuccess)
                 {

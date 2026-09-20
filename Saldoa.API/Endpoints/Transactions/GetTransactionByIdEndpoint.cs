@@ -1,7 +1,5 @@
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Transactions.GetById;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
@@ -11,14 +9,12 @@ internal static class GetTransactionByIdEndpoint
     {
         transactionsGroup.MapGet("/{id:long}", 
             async Task<IResult> (
+                Guid workspaceId,
                 long id,
                 GetTransactionByIdUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
-                var userId = user.GetUserId();
-
-                var result = await useCase.ExecuteAsync(id, userId, ct);
+                var result = await useCase.ExecuteAsync(id, workspaceId, ct);
 
                 if (!result.IsSuccess)
                 {

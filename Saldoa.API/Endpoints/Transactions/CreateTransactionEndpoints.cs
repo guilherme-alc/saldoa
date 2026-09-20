@@ -12,6 +12,7 @@ internal static class CreateTransactionEndpoints
     {
         transactionsGroup.MapPost("/", 
             async Task<IResult> (
+                Guid workspaceId,
                 CreateTransactionRequest request,
                 CreateTransactionUseCase useCase,
                 IValidator<CreateTransactionRequest> validator,
@@ -36,7 +37,7 @@ internal static class CreateTransactionEndpoints
 
                 var userId = user.GetUserId();
 
-                var result = await useCase.ExecuteAsync(request, userId, ct);
+                var result = await useCase.ExecuteAsync(request, workspaceId, userId, ct);
 
                 if (!result.IsSuccess)
                 {

@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Transactions.GetInstallmentsByGroupId;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
@@ -12,11 +10,11 @@ internal static class GetInstallmentsByGroupIdEndpoint
     {
         transactionsGroup.MapGet("/installment-groups/{installmentGroupId:guid}", 
             async Task<IResult> (
+                Guid workspaceId,
                 Guid installmentGroupId,
                 [AsParameters] GetInstallmentsByGroupIdRequest request,
                 GetInstallmentsByGroupIdUseCase useCase,
                 IValidator<GetInstallmentsByGroupIdRequest> validator,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -35,9 +33,7 @@ internal static class GetInstallmentsByGroupIdEndpoint
                     );
                 }
 
-                var userId = user.GetUserId();
-
-                var result = await useCase.ExecuteAsync(userId, installmentGroupId, request, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, installmentGroupId, request, ct);
 
                 if (!result.IsSuccess)
                 {

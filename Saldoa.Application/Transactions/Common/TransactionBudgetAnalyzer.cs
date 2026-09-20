@@ -15,7 +15,7 @@ namespace Saldoa.Application.Transactions.Common
         }
 
         public async Task<List<BudgetAlert>> AnalyzeAsync(
-            string userId,
+            Guid workspaceId,
             long categoryId,
             List<InstallmentDraft> installments,
             IReadOnlyCollection<long> excludeTransactionIds,
@@ -29,7 +29,7 @@ namespace Saldoa.Application.Transactions.Common
             var installmentsEnd = installments.Max(i => i.Date);
 
             var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                userId,
+                workspaceId,
                 categoryId,
                 installmentsStart,
                 installmentsEnd,
@@ -41,7 +41,7 @@ namespace Saldoa.Application.Transactions.Common
             var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
             var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
 
-            var totalsByDate = await _transactionRepository.GetTotalsByDateExcludingAsync(userId, categoryId, budgetsStart, budgetsEnd, excludeTransactionIds, ct, TransactionType.Expense);
+            var totalsByDate = await _transactionRepository.GetTotalsByDateExcludingAsync(workspaceId, categoryId, budgetsStart, budgetsEnd, excludeTransactionIds, ct, TransactionType.Expense);
 
             foreach (var budget in affectedBudgets)
             {
@@ -71,7 +71,7 @@ namespace Saldoa.Application.Transactions.Common
         }
 
         public async Task<List<BudgetAlert>> AnalyzeAsync(
-            string userId,
+            Guid workspaceId,
             long categoryId,
             List<InstallmentDraft> installments,
             CancellationToken ct)
@@ -84,7 +84,7 @@ namespace Saldoa.Application.Transactions.Common
             var installmentsEnd = installments.Max(i => i.Date);
 
             var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                userId,
+                workspaceId,
                 categoryId,
                 installmentsStart,
                 installmentsEnd,
@@ -96,7 +96,7 @@ namespace Saldoa.Application.Transactions.Common
             var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
             var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
 
-            var totalsByDate = await _transactionRepository.GetTotalsByDateAsync(userId, categoryId, budgetsStart, budgetsEnd, ct, TransactionType.Expense);
+            var totalsByDate = await _transactionRepository.GetTotalsByDateAsync(workspaceId, categoryId, budgetsStart, budgetsEnd, ct, TransactionType.Expense);
 
             foreach (var budget in affectedBudgets)
             {

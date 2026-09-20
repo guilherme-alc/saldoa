@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.CategoryBudgets.Create;
 
 namespace Saldoa.API.Endpoints.CategoryBudgets;
@@ -12,10 +10,10 @@ internal static class CreateCategoryBudgetEndpoint
     {
         categoryBudgetsGroup.MapPost("/", 
             async Task<IResult> (
+                Guid workspaceId,
                 CreateCategoryBudgetRequest request,
                 IValidator<CreateCategoryBudgetRequest> validator,
                 CreateCategoryBudgetUseCase useCase,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -34,9 +32,7 @@ internal static class CreateCategoryBudgetEndpoint
                     );
                 }
 
-                var userId = user.GetUserId();
-            
-                var result = await useCase.ExecuteAsync(userId, request, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
 
                 if (!result.IsSuccess)
                 {

@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Categories.Create;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Categories;
 
@@ -12,10 +10,10 @@ internal static class CreateCategoryEndpoint
     {
         categoriesGroup.MapPost("/", 
             async Task<IResult>(
+                Guid workspaceId,
                 CreateCategoryRequest request,
                 CreateCategoryUseCase useCase,
                 IValidator<CreateCategoryRequest> validator,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -33,10 +31,8 @@ internal static class CreateCategoryEndpoint
                         title: "Entrada inválida"
                     );
                 }
-            
-                var userId = user.GetUserId();
 
-                var result = await useCase.ExecuteAsync(request, userId, ct);
+                var result = await useCase.ExecuteAsync(request, workspaceId, ct);
             
                 if (!result.IsSuccess)
                 {

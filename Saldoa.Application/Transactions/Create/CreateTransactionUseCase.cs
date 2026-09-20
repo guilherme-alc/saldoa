@@ -27,9 +27,9 @@ public class CreateTransactionUseCase
         _transactionBudgetAnalyzer = transactionBudgetAnalyzer;
     }
 
-    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, string userId, CancellationToken ct)
+    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, Guid workspaceId, string userId, CancellationToken ct)
     {
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, userId, ct);
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, workspaceId, ct);
         
         if(category == null)
         {
@@ -44,7 +44,7 @@ public class CreateTransactionUseCase
         if (request.Type == TransactionType.Expense)
         {
             budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
-                userId,
+                workspaceId,
                 request.CategoryId,
                 installments,
                 ct);
@@ -52,14 +52,15 @@ public class CreateTransactionUseCase
 
         var transactions = installments.Select(i =>
             new Transaction(
-                userId,
+                workspaceId,
                 request.Title,
                 request.Description,
                 request.Type,
                 i.Amount,
                 i.Date,
                 category.Id,
-                i.InstallmentInfo
+                i.InstallmentInfo,
+                userId
             )
         ).ToList();
 

@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.CategoryBudgets.Update;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.CategoryBudgets;
 
@@ -13,10 +11,10 @@ internal static class UpdateCategoryBudgetEndpoint
         categoryBudgetsGroup.MapPut("/{id:long:min(1)}", 
             async Task<IResult> (
                 long id,
+                Guid workspaceId,
                 UpdateCategoryBudgetRequest request,
                 UpdateCategoryBudgetUseCase useCase,
                 IValidator<UpdateCategoryBudgetRequest> validator,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -34,10 +32,8 @@ internal static class UpdateCategoryBudgetEndpoint
                         title: "Entrada inválida"
                     );
                 }
-
-                var userId = user.GetUserId();
             
-                var result = await useCase.ExecuteAsync(userId, id, request, ct);
+                var result = await useCase.ExecuteAsync(workspaceId, id, request, ct);
 
                 if (!result.IsSuccess)
                 {

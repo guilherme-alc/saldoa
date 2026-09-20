@@ -15,7 +15,7 @@ public class ListTransactionsByPeriodUseCase
         _transactionRepository = transactionRepository;
     }
     
-    public async Task<Result<PagedResult<TransactionResponse>>> ExecuteAsync(string userId, ListTransactionsByPeriodRequest request, CancellationToken ct)
+    public async Task<Result<PagedResult<TransactionResponse>>> ExecuteAsync(Guid workspaceId, ListTransactionsByPeriodRequest request, CancellationToken ct)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         DateOnly startDate, endDate;
@@ -32,7 +32,7 @@ public class ListTransactionsByPeriodUseCase
         }
         
         var data = await _transactionRepository.ListByPeriodAsync(
-            userId, 
+            workspaceId, 
             startDate, 
             endDate,
             request.Type,
