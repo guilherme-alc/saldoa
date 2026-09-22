@@ -14,7 +14,10 @@ namespace Saldoa.Application.Auth.ConfirmEmail
 
         public async Task<Result> ExecuteAsync(ConfirmEmailRequest request, CancellationToken ct)
         {
-            if (request.UserId is null || request.EncodedToken is null)
+            if (request.EncodedToken is null)
+                return Result.Failure(AuthErrors.Invalid);
+
+            if (request.UserId == Guid.Empty)
                 return Result.Failure(AuthErrors.Invalid);
 
             var result = await _identityService.ConfirmEmailAsync(request.UserId, request.EncodedToken, ct);

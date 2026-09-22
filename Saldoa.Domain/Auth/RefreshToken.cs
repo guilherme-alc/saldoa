@@ -4,7 +4,7 @@ public class RefreshToken
 {
     private RefreshToken() { }
 
-    public RefreshToken(string tokenHash, string userId, DateTime expiresAt)
+    public RefreshToken(string tokenHash, Guid userId, DateTime expiresAt)
     {
         TokenHash = tokenHash;
         UserId = userId;
@@ -14,7 +14,7 @@ public class RefreshToken
 
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string TokenHash { get; private set; } = string.Empty;
-    public string UserId { get; private set; } = string.Empty;
+    public Guid UserId { get; private set; }
 
     public DateTime CreatedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }

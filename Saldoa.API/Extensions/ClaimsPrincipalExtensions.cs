@@ -5,10 +5,14 @@ namespace Saldoa.API.Extensions;
 
 internal static class ClaimsPrincipalExtensions
 {
-    internal static string GetUserId(this ClaimsPrincipal user)
+    internal static Guid GetUserId(this ClaimsPrincipal user)
     {
-        return user.FindFirstValue(ClaimTypes.NameIdentifier)
-               ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub)
-               ?? throw new UnauthorizedAccessException("UserId não encontrado no token.");
+        var value = user.FindFirstValue(ClaimTypes.NameIdentifier)
+               ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        if (!Guid.TryParse(value, out var userId))
+            throw new UnauthorizedAccessException("UserId não encontrado no token.");
+
+        return userId;
     }
 }

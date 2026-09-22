@@ -16,13 +16,13 @@ public class JwtProvider : IJwtProvider
         _options = options.Value;
     }
     
-    public AccessTokenResult CreateAccessToken(string userId, string email, IEnumerable<Claim> claims)
+    public AccessTokenResult CreateAccessToken(Guid userId, string email, IEnumerable<Claim> claims)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         
         var jwtClaims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, userId),
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new(JwtRegisteredClaimNames.Email, email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };

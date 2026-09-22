@@ -3,6 +3,6 @@
     public sealed record ConfirmationTokenResult(
         bool ShouldSendEmail,
         string? Email,
-        string? UserId,
+        Guid? UserId,
         string? Token);
 }

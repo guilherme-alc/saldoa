@@ -46,7 +46,10 @@ namespace Saldoa.Application.Auth.ResendConfirmEmail
 
             await _emailService.SendAsync(emailMessage, ct);
 
-            var resultUpdate = await _identityService.UpdateLastConfirmationEmailSentAtAsync(validateResult.Value.UserId!, ct);
+            if (validateResult.Value.UserId is not Guid userId)
+                return Result.Failure(AuthErrors.Unexpected);
+
+            var resultUpdate = await _identityService.UpdateLastConfirmationEmailSentAtAsync(userId, ct);
 
             if (!resultUpdate.IsSuccess)
                 return Result.Failure(resultUpdate.Error!);

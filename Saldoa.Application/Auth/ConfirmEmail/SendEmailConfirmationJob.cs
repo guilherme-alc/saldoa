@@ -17,7 +17,7 @@ namespace Saldoa.Application.Auth.ConfirmEmail
             _identityService = identityService;
         }
 
-        public async Task ExecuteAsync(EmailMessage emailMessage, string userId, CancellationToken ct = default)
+        public async Task ExecuteAsync(EmailMessage emailMessage, Guid userId, CancellationToken ct = default)
         {
             await _emailService.SendAsync(emailMessage, ct);
 

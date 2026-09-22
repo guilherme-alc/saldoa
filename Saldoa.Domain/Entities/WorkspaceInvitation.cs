@@ -15,7 +15,7 @@ namespace Saldoa.Domain.Entities
             Guid workspaceId, 
             string token, 
             WorkspaceRole role,
-            string invitedByUserId, 
+            Guid invitedByUserId, 
             DateTimeOffset expiresAt)
         {
             if (workspaceId == Guid.Empty)
@@ -43,13 +43,13 @@ namespace Saldoa.Domain.Entities
         public string TokenHash { get; private set; } = null!;
         public WorkspaceRole Role { get; private set; }
         public WorkspaceInvitationStatus Status { get; private set; }
-        public string? AcceptedByUserId { get; private set; }
-        public string InvitedByUserId { get; private set; } = null!;
+        public Guid? AcceptedByUserId { get; private set; }
+        public Guid InvitedByUserId { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
         public DateTimeOffset? AcceptedAt { get; private set; }
         public DateTimeOffset ExpiresAt { get; private set; }
 
-        public void Accept(string userId)
+        public void Accept(Guid userId)
         {
             CheckCurrentStatus("aceitar");
 
@@ -72,7 +72,7 @@ namespace Saldoa.Domain.Entities
             Status = WorkspaceInvitationStatus.Declined;
         }
 
-        public void Revoke(string userId)
+        public void Revoke(Guid userId)
         {
             CheckCurrentStatus("revogar");
 
@@ -151,9 +151,9 @@ namespace Saldoa.Domain.Entities
             return expiresAt;
         }
 
-        private static void EnsureValidUserId(string userId)
+        private static void EnsureValidUserId(Guid userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
+            if (userId == Guid.Empty)
                 throw new DomainException("Usuário inválido ou não informado.");
         }
 

@@ -16,9 +16,9 @@ namespace Saldoa.Domain.Entities
             DateOnly paidOrReceivedAt,
             long categoryId,
             InstallmentInfo installmentInfo,
-            string userId)
+            Guid userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
+            if (userId == Guid.Empty)
                 throw new DomainException("Usuário inválido.");
 
             if (workspaceId == Guid.Empty)
@@ -46,7 +46,7 @@ namespace Saldoa.Domain.Entities
         public long CategoryId { get; private set; }
         public Category Category { get; private set; } = null!;
         public InstallmentInfo InstallmentInfo { get; private set; } = null!;
-        public string CreatedByUserId { get; private set; } = null!;
+        public Guid CreatedByUserId { get; private set; }
         public Guid WorkspaceId { get; private set; }
 
         public void ChangeTitle(string title)

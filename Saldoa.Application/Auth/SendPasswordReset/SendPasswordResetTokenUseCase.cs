@@ -47,7 +47,10 @@ namespace Saldoa.Application.Auth.SendPasswordReset
 
             await _emailService.SendAsync(emailMessage, ct);
 
-            var resultUpdate = await _identityService.UpdateLastPasswordResetEmailSentAtAsync(generateTokenResult.Value.UserId!, ct);
+            if (generateTokenResult.Value.UserId is not Guid userId)
+                return Result.Failure(AuthErrors.Unexpected);
+
+            var resultUpdate = await _identityService.UpdateLastPasswordResetEmailSentAtAsync(userId, ct);
 
             if (!resultUpdate.IsSuccess)
                 return Result.Failure(resultUpdate.Error!);

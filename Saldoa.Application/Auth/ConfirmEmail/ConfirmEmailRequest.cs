@@ -1,4 +1,4 @@
 ﻿namespace Saldoa.Application.Auth.ConfirmEmail
 {
-    public sealed record ConfirmEmailRequest(string UserId, string EncodedToken);
+    public sealed record ConfirmEmailRequest(Guid UserId, string EncodedToken);
 }

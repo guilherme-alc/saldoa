@@ -6,7 +6,7 @@ namespace Saldoa.Domain.Entities
     public class Workspace
     {
         private Workspace() { }
-        public Workspace(string name, string userId)
+        public Workspace(string name, Guid userId)
         {
             var validUserId = EnsureValidUserId(userId);
             Id = Guid.CreateVersion7();
@@ -18,7 +18,7 @@ namespace Saldoa.Domain.Entities
 
         public Guid Id { get; private set; }
         public string Name { get; private set; } = null!;
-        public string CreatedByUserId { get; private set; } = null!;
+        public Guid CreatedByUserId { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
         private readonly List<WorkspaceMembership> _memberships = [];
         public IReadOnlyCollection<WorkspaceMembership> Memberships => _memberships.AsReadOnly();
@@ -35,7 +35,7 @@ namespace Saldoa.Domain.Entities
             _memberships.Add(member);
         }
 
-        public void RemoveMember(string userId)
+        public void RemoveMember(Guid userId)
         {
             userId = EnsureValidUserId(userId);
 
@@ -49,7 +49,7 @@ namespace Saldoa.Domain.Entities
             _memberships.Remove(existing);
         }
 
-        public void ChangeMemberRole(string userId, WorkspaceRole role)
+        public void ChangeMemberRole(Guid userId, WorkspaceRole role)
         {
             userId = EnsureValidUserId(userId);
             if (!Enum.IsDefined(role))
@@ -67,7 +67,7 @@ namespace Saldoa.Domain.Entities
             existing.ChangeRole(role);
         }
 
-        private WorkspaceMembership CreateOwner(string userId)
+        private WorkspaceMembership CreateOwner(Guid userId)
         {
             var owner = new WorkspaceMembership(Id, userId, WorkspaceRole.Owner);
 
@@ -76,7 +76,7 @@ namespace Saldoa.Domain.Entities
 
         private WorkspaceMembership EnsureValidWorkspaceMembership(WorkspaceMembership workspaceMembership)
         {
-            if (workspaceMembership == null || workspaceMembership.Id == Guid.Empty || string.IsNullOrWhiteSpace(workspaceMembership.UserId))
+            if (workspaceMembership == null || workspaceMembership.Id == Guid.Empty || workspaceMembership.UserId == Guid.Empty)
                 throw new DomainException("O vínculo do usuário não é válido");
 
             if (workspaceMembership.WorkspaceId != Id)
@@ -85,12 +85,12 @@ namespace Saldoa.Domain.Entities
             return workspaceMembership;
         }
 
-        private static string EnsureValidUserId(string userId)
+        private static Guid EnsureValidUserId(Guid userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
+            if (userId == Guid.Empty)
                 throw new DomainException("Usuário inválido ou não informado.");
 
-            return userId.Trim();
+            return userId;
         }
 
         private static string EnsureValidName(string name)

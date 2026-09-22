@@ -27,7 +27,7 @@ public class CreateTransactionUseCase
         _transactionBudgetAnalyzer = transactionBudgetAnalyzer;
     }
 
-    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, Guid workspaceId, string userId, CancellationToken ct)
+    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, Guid workspaceId, Guid userId, CancellationToken ct)
     {
         var category = await _categoryRepository.GetByIdAsync(request.CategoryId, workspaceId, ct);
         

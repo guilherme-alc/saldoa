@@ -1,4 +1,4 @@
 ﻿namespace Saldoa.Application.Auth.PasswordReset
 {
-    public sealed record ResetPasswordRequest(string UserId, string EncodedToken, string NewPassword);
+    public sealed record ResetPasswordRequest(Guid UserId, string EncodedToken, string NewPassword);
 }

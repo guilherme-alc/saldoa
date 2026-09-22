@@ -60,11 +60,11 @@ public sealed class IdentityService : IIdentityService
         return Result<CreateUserResult>.Success(new CreateUserResult(confirmationToken.Value, email, user.Id));
     }
 
-    private async Task<Result<string>> GenerateEmailConfirmationTokenAsync(string userId, CancellationToken ct)
+    private async Task<Result<string>> GenerateEmailConfirmationTokenAsync(Guid userId, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user is null)
             return Result<string>.Failure(AuthErrors.UserNotFound);
 
@@ -74,7 +74,7 @@ public sealed class IdentityService : IIdentityService
         return Result<string>.Success(confirmationToken);
     }
 
-    public async Task<Result<string>> SignInAsync(string email, string password, CancellationToken ct)
+    public async Task<Result<Guid>> SignInAsync(string email, string password, CancellationToken ct)
     {
         var normalized = _userManager.NormalizeEmail(email);
 
@@ -82,13 +82,13 @@ public sealed class IdentityService : IIdentityService
             .FirstOrDefaultAsync(u => u.NormalizedEmail == normalized, ct);
         
         if (user is null || !user.IsActive)
-            return Result<string>.Failure(AuthErrors.InvalidCredentials);
+            return Result<Guid>.Failure(AuthErrors.InvalidCredentials);
 
         if (await _userManager.IsLockedOutAsync(user))
-            return Result<string>.Failure(AuthErrors.Forbidden);
+            return Result<Guid>.Failure(AuthErrors.Forbidden);
 
         if (!await _userManager.IsEmailConfirmedAsync(user))
-            return Result<string>.Failure(AuthErrors.EmailNotConfirmed);
+            return Result<Guid>.Failure(AuthErrors.EmailNotConfirmed);
 
         ct.ThrowIfCancellationRequested();
 
@@ -99,9 +99,9 @@ public sealed class IdentityService : IIdentityService
             await _userManager.AccessFailedAsync(user);
 
             if (await _userManager.IsLockedOutAsync(user))
-                return Result<string>.Failure(AuthErrors.Forbidden);
+                return Result<Guid>.Failure(AuthErrors.Forbidden);
 
-            return Result<string>.Failure(AuthErrors.InvalidCredentials);
+            return Result<Guid>.Failure(AuthErrors.InvalidCredentials);
         }
 
         await _userManager.ResetAccessFailedCountAsync(user);
@@ -112,12 +112,12 @@ public sealed class IdentityService : IIdentityService
         var updateLastLoginResult = await _userManager.UpdateAsync(user);
 
         if (!updateLastLoginResult.Succeeded)
-            return Result<string>.Failure(AuthErrors.Unexpected);
+            return Result<Guid>.Failure(AuthErrors.Unexpected);
 
-        return Result<string>.Success(user.Id);
+        return Result<Guid>.Success(user.Id);
     }
     
-    public async Task<Result<string?>> GetEmailByUserIdAsync(string userId, CancellationToken ct)
+    public async Task<Result<string?>> GetEmailByUserIdAsync(Guid userId, CancellationToken ct)
     {
         var user = await _userManager.Users
             .SingleOrDefaultAsync(u => u.Id == userId, ct);
@@ -128,11 +128,11 @@ public sealed class IdentityService : IIdentityService
         return Result<string?>.Success(user.Email);
     }
 
-    public async Task<Result> ConfirmEmailAsync(string userId, string encodedToken, CancellationToken ct)
+    public async Task<Result> ConfirmEmailAsync(Guid userId, string encodedToken, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user is null)
             return Result.Failure(AuthErrors.UserNotFound);
 
@@ -156,7 +156,7 @@ public sealed class IdentityService : IIdentityService
         return Result.Success();
     }
 
-    public async Task<Result> UpdateLastConfirmationEmailSentAtAsync(string userId, CancellationToken ct)
+    public async Task<Result> UpdateLastConfirmationEmailSentAtAsync(Guid userId, CancellationToken ct)
     {
         var user = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId, ct);
@@ -231,7 +231,7 @@ public sealed class IdentityService : IIdentityService
         );
     }
 
-    public async Task<Result> UpdateLastPasswordResetEmailSentAtAsync(string userId, CancellationToken ct)
+    public async Task<Result> UpdateLastPasswordResetEmailSentAtAsync(Guid userId, CancellationToken ct)
     {
         var user = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId, ct);
@@ -248,11 +248,11 @@ public sealed class IdentityService : IIdentityService
         return Result.Success();
     }
 
-    public async Task<Result> ResetPasswordAsync(string userId, string encodedToken, string newPassword, CancellationToken ct)
+    public async Task<Result> ResetPasswordAsync(Guid userId, string encodedToken, string newPassword, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user is null)
             return Result.Failure(AuthErrors.InvalidResetToken);
 

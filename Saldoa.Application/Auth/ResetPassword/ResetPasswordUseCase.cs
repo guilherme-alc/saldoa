@@ -15,7 +15,10 @@ namespace Saldoa.Application.Auth.ResetPassword
 
         public async Task<Result> ExecuteAsync(ResetPasswordRequest request, CancellationToken ct = default)
         {
-            if (request.UserId is null || request.EncodedToken is null)
+            if (request.EncodedToken is null)
+                return Result.Failure(AuthErrors.Invalid);
+
+            if (request.UserId == Guid.Empty)
                 return Result.Failure(AuthErrors.Invalid);
 
             var result = await _identityService.ResetPasswordAsync(request.UserId, request.EncodedToken, request.NewPassword, ct);

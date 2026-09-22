@@ -1,14 +1,14 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Saldoa.Infrastructure.Identity;
 using Saldoa.Domain.Auth;
 using Saldoa.Domain.Entities;
+using Saldoa.Infrastructure.Identity;
+using System.Reflection;
 
 namespace Saldoa.Infrastructure.Persistence
 {
-    public class SaldoaDbContext : IdentityDbContext<ApplicationUser>
+    public class SaldoaDbContext : IdentityUserContext<ApplicationUser, Guid>
     {
         public SaldoaDbContext(DbContextOptions<SaldoaDbContext> options)
             : base(options) { }
@@ -26,13 +26,10 @@ namespace Saldoa.Infrastructure.Persistence
             base.OnModelCreating(builder);
             
             builder.HasDefaultSchema("app");
-            
-            builder.Entity<IdentityRole>().ToTable("roles", "auth");
-            builder.Entity<IdentityUserRole<string>>().ToTable("user_roles", "auth");
-            builder.Entity<IdentityUserClaim<string>>().ToTable("user_claims", "auth");
-            builder.Entity<IdentityUserLogin<string>>().ToTable("user_logins", "auth");
-            builder.Entity<IdentityRoleClaim<string>>().ToTable("role_claims", "auth");
-            builder.Entity<IdentityUserToken<string>>().ToTable("user_tokens", "auth");
+
+            builder.Entity<IdentityUserClaim<Guid>>().ToTable("user_claims", "auth");
+            builder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins", "auth");
+            builder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens", "auth");
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
