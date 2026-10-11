@@ -11,6 +11,7 @@ namespace Saldoa.API
             builder
                 .AddOpenApi()
                 .AddJsonOptions()
+                .AddProblemDetails()
                 .AddInfrastructure()
                 .AddAuth()
                 .AddApplicationRateLimiting()

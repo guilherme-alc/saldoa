@@ -12,6 +12,8 @@ internal static class WebApplicationExtensions
     /// </summary>
     internal static WebApplication UseApi(this WebApplication app)
     {
+        app.UseStatusCodePages();
+
         // Tratamento global de exceções
         app.UseMiddleware<ExceptionHandlingMiddleware>();
         

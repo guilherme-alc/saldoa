@@ -78,19 +78,12 @@ internal class ExceptionHandlingMiddleware
             return;
 
         context.Response.Clear();
-        context.Response.StatusCode = statusCode;
-        context.Response.ContentType = "application/problem+json";
 
-        var problem = new ProblemDetails
-        {
-            Status = statusCode,
-            Title = title,
-            Detail = detail,
-            Instance = context.Request.Path
-        };
-
-        await context.Response.WriteAsJsonAsync(
-            problem,
-            cancellationToken: context.RequestAborted);
+        await TypedResults.Problem(
+            statusCode: statusCode,
+            title: title,
+            detail: detail,
+            instance: context.Request.Path
+        ).ExecuteAsync(context);
     }
 }

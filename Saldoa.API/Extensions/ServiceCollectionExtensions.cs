@@ -15,20 +15,6 @@ namespace Saldoa.API.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static WebApplicationBuilder AddJsonOptions(this WebApplicationBuilder builder)
-    {
-
-        builder.Services.ConfigureHttpJsonOptions(options =>
-        {
-            options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
-
-            options.SerializerOptions.Converters.Add(
-                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
-        });
-
-        return builder;
-    }
-
     internal static WebApplicationBuilder AddOpenApi(this WebApplicationBuilder builder)
     {
         builder.Services.AddOpenApi(options =>
@@ -44,6 +30,38 @@ internal static class ServiceCollectionExtensions
             options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             options.AddOperationTransformer<AuthOperationTransformer>();
         });
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddJsonOptions(this WebApplicationBuilder builder)
+    {
+
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+
+            options.SerializerOptions.Converters.Add(
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+        });
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddProblemDetails(this WebApplicationBuilder builder)
+    {
+
+        builder.Services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Extensions["traceId"] =
+                    context.HttpContext.TraceIdentifier;
+
+                context.ProblemDetails.Extensions["timestamp"] =
+                    DateTimeOffset.UtcNow;
+            };
+            });
 
         return builder;
     }

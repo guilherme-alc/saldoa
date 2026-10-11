@@ -37,15 +37,12 @@ internal static class RateLimitingExtensions
                 context.HttpContext.Response.Headers.RetryAfter = Math.Ceiling(retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
             }
 
-            await context.HttpContext.Response.WriteAsJsonAsync(
-                new
-                {
-                    title = "Muitas requisições",
-                    detail = "Aguarde alguns instantes antes de tentar novamente.",
-                    status = StatusCodes.Status429TooManyRequests
-                },
-                cancellationToken
-            );
+            await TypedResults.Problem(
+                statusCode: StatusCodes.Status429TooManyRequests,
+                title: "Muitas requisições",
+                detail: "Aguarde alguns instantes antes de tentar novamente.",
+                instance: context.HttpContext.Request.Path
+            ).ExecuteAsync(context.HttpContext);
         };
     }
 
