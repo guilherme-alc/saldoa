@@ -31,6 +31,7 @@ internal static class DeleteCategoryBudgetEndpoint
                 return TypedResults.NoContent();
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Remove um limite de gasto por categoria")
         .WithDescription("Remove um limite de gasto pelo Id");
     }

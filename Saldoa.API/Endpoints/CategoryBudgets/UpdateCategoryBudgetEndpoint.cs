@@ -50,6 +50,7 @@ internal static class UpdateCategoryBudgetEndpoint
                 return TypedResults.NoContent();
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Atualiza limite de gasto da categoria")
         .WithDescription(
             "Atualiza completamente o limite de gasto. " +

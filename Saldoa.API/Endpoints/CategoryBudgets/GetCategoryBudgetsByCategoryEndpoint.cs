@@ -38,6 +38,7 @@ internal static class GetCategoryBudgetsByCategoryEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém lista de limite de gasto de uma categoria")
         .WithDescription("Obtém lista de limites de gastos da categoria especificada na rota");
     }

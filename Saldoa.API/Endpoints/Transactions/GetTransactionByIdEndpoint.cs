@@ -33,6 +33,7 @@ internal static class GetTransactionByIdEndpoint
                 return TypedResults.Ok(response);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém uma transação")
         .WithDescription("Obtém uma transação pelo Id");
     }

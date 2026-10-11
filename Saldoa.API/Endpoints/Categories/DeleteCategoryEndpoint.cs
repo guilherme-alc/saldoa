@@ -31,6 +31,7 @@ internal static class DeleteCategoryEndpoint
                 return TypedResults.NoContent();
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Remove uma categoria")
         .WithDescription("Remove categoria pelo Id");
     }

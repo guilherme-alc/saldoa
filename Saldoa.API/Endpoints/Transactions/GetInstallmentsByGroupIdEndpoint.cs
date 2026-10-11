@@ -50,6 +50,7 @@ internal static class GetInstallmentsByGroupIdEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém os detalhes de um parcelamento")
         .WithDescription("Retorna o resumo do parcelamento e suas parcelas com paginação.");
     }

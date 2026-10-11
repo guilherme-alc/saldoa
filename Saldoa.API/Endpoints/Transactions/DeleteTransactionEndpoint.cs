@@ -31,6 +31,7 @@ internal static class DeleteTransactionEndpoint
                 return TypedResults.NoContent();
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Remove uma transação")
         .WithDescription("Remove transação pelo Id");
     }

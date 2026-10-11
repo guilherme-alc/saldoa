@@ -50,6 +50,7 @@ internal static class UpdateCategoryEndpoint
                 return TypedResults.NoContent();
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Atualiza categoria")
         .WithDescription(
             "Atualiza completamente a categoria."

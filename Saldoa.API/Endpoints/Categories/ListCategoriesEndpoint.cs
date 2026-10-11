@@ -36,6 +36,7 @@ internal static class ListCategoriesEndpoint
                 return TypedResults.Ok(result);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém lista de categorias")
         .WithDescription("Obtém lista de categorias do usuário com paginação");
     }

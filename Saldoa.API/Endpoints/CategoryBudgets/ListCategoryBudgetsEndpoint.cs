@@ -37,6 +37,7 @@ internal static class ListCategoryBudgetsEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém lista de limite de gasto por categoria")
         .WithDescription(
             "Obtém lista de limites de gastos com filtros opcionais de período e status. " +

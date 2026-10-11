@@ -31,6 +31,7 @@ internal static class GetCategoryBudgetByIdEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém um limite de gasto por categoria")
         .WithDescription("Obtém um limite de gasto pelo Id");
     }

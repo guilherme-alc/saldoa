@@ -51,6 +51,7 @@ internal static class CreateCategoryEndpoint
                 return TypedResults.Created($"/categories/{response.Id}", response);
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Cria nova categoria")
         .WithDescription("Cria nova categoria Nome (obrigatório), descrição e cor (opcionais)");
     }

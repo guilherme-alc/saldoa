@@ -49,6 +49,7 @@ internal static class ListTransactionsByPeriodEndpoint
                 return Results.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém lista de transações de um período")
         .WithDescription("Obtém lista de transações de um período com paginação e podendo filtrar pelo tipo (despesa ou renda). " + 
                          "O Período é opcional, caso não seja informado será retornado transações em um range da data atual até um ano atrás");

@@ -50,6 +50,7 @@ internal static class UpdateTransactionEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Atualiza uma transação")
         .WithDescription("Atualiza uma transação.");
     }

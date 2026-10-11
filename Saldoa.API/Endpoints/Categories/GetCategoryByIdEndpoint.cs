@@ -31,6 +31,7 @@ internal static class GetCategoryByIdEndpoint
                 return TypedResults.Ok(result.Value);
             }
         )
+        .RequireAuthorization("WorkspaceRead")
         .WithSummary("Obtém uma categoria")
         .WithDescription("Obtém uma categoria pelo Id");
     }

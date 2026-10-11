@@ -57,6 +57,7 @@ internal static class CreateTransactionEndpoints
                 return TypedResults.Created($"/transactions/{responseItem!.Id}", response);
             }
         )
+        .RequireAuthorization("WorkspaceWrite")
         .WithSummary("Cria nova transação")
         .WithDescription(
             "Cria nova categoria Título (obrigatório); Descrição (opcionail); Data de Pagamento ou Recebimento (opcionail); " +
