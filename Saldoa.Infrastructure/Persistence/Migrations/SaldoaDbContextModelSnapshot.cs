@@ -347,7 +347,7 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                     b.Property<short>("Role")
                         .HasColumnType("smallint")
                         .HasColumnName("role")
-                        .HasComment("1 = Member, 2 = Owner, 3 = ReadOnly");
+                        .HasComment("1 = ReadOnly, 2 = Member, 3 = Owner");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint")
@@ -395,7 +395,7 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                     b.Property<short>("Role")
                         .HasColumnType("smallint")
                         .HasColumnName("role")
-                        .HasComment("1 = Member, 2 = Owner, 3 = ReadOnly");
+                        .HasComment("1 = ReadOnly, 2 = Member, 3 = Owner");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")

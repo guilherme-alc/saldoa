@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Saldoa.API.OpenApi;
+using Saldoa.API.Security;
 using Saldoa.Application;
+using Saldoa.Domain.Enums;
 using Saldoa.Infrastructure;
 using Saldoa.Infrastructure.Auth;
 using System.Text;
@@ -61,7 +63,7 @@ internal static class ServiceCollectionExtensions
                 context.ProblemDetails.Extensions["timestamp"] =
                     DateTimeOffset.UtcNow;
             };
-            });
+        });
 
         return builder;
     }
@@ -73,6 +75,15 @@ internal static class ServiceCollectionExtensions
 
         builder.Services.AddJwtAuthentication(builder.Configuration);
         builder.Services.AddAuthenticatedUserFallbackPolicy();
+
+        builder.Services.AddScoped<IAuthorizationHandler, WorkspaceRoleHandler>();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("WorkspaceRead", p => p.RequireAuthenticatedUser()
+                .AddRequirements(new WorkspaceRoleRequirement(WorkspaceRole.ReadOnly)))
+            .AddPolicy("WorkspaceWrite", p => p.RequireAuthenticatedUser()
+                .AddRequirements(new WorkspaceRoleRequirement(WorkspaceRole.Member)))
+            .AddPolicy("WorkspaceOwner", p => p.RequireAuthenticatedUser()
+                .AddRequirements(new WorkspaceRoleRequirement(WorkspaceRole.Owner)));
 
         return builder;
     }

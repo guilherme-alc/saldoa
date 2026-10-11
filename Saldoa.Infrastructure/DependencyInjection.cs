@@ -9,12 +9,14 @@ using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Email.Abstractions;
 using Saldoa.Application.Identity.Abstractions;
 using Saldoa.Application.Transactions.Abstractions;
+using Saldoa.Application.WorkspaceMemberships.Abstractions;
 using Saldoa.Infrastructure.Auth;
 using Saldoa.Infrastructure.BackgroundJob;
 using Saldoa.Infrastructure.Email;
 using Saldoa.Infrastructure.Identity;
 using Saldoa.Infrastructure.Persistence;
 using Saldoa.Infrastructure.Persistence.Repositories;
+using Saldoa.Infrastructure.Tenancy;
 
 namespace Saldoa.Infrastructure
 {
@@ -47,10 +49,13 @@ namespace Saldoa.Infrastructure
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<ICategoryBudgetRepository, CategoryBudgetRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IWorkspaceMembershipRepository, WorkspaceMembershipRepository>();
 
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IEmailService, SmtpEmailService>();
+
+            services.AddScoped<IWorkspaceContext, CurrentWorkspaceContext>();
 
             services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
 

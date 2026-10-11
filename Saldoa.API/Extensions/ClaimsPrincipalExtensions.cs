@@ -15,4 +15,12 @@ internal static class ClaimsPrincipalExtensions
 
         return userId;
     }
+
+    internal static bool TryGetUserId(this ClaimsPrincipal user, out Guid userId)
+    {
+        var value = user.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        return Guid.TryParse(value, out userId);
+    }
 }

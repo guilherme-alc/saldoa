@@ -2,8 +2,8 @@
 {
     public enum WorkspaceRole
     {
-        Member = 1,
-        Owner = 2,
-        ReadOnly = 3
+        ReadOnly = 1,
+        Member = 2,
+        Owner = 3,
     }
 }

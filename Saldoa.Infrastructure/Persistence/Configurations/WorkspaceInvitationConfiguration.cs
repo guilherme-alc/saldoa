@@ -36,7 +36,7 @@ namespace Saldoa.Infrastructure.Persistence.Configurations
                 .HasColumnName("role")
                 .HasConversion<short>()
                 .IsRequired()
-                .HasComment("1 = Member, 2 = Owner, 3 = ReadOnly");
+                .HasComment("1 = ReadOnly, 2 = Member, 3 = Owner");
 
             builder.Property(w => w.Status)
                 .HasColumnName("workspace_invitation_status")
