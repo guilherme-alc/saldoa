@@ -9,12 +9,11 @@ internal static class GetCategoryBudgetByIdEndpoint
     {
         categoryBudgetsGroup.MapGet("/{id:long:min(1)}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long id,
                 GetCategoryBudgetByIdUseCase useCase,
                 CancellationToken ct) =>
             {
-                var result = await useCase.ExecuteAsync(workspaceId, id, ct);
+                var result = await useCase.ExecuteAsync(id, ct);
 
                 if (!result.IsSuccess)
                 {

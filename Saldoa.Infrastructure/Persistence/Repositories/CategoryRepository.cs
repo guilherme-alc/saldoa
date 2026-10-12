@@ -17,19 +17,19 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
         dbContext.Categories.Remove(category);
     }
 
-    public async Task<Category?> GetByIdAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Category?> GetByIdAsync(long id, CancellationToken ct)
     {
         var category = await dbContext.Categories
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id && c.WorkspaceId == workspaceId, ct);
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
 
         return category;
     }
     
-    public async Task<Category?> GetByIdForUpdateAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Category?> GetByIdForUpdateAsync(long id, CancellationToken ct)
     {
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(c => c.Id == id && c.WorkspaceId == workspaceId, ct);
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
 
         return category;
     }
@@ -37,13 +37,11 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
     public async Task<PagedResult<Category>> ListAsync(
         int pageNumber, 
         int pageSize,
-        Guid workspaceId,
         CancellationToken ct)
     {
         var query = dbContext
             .Categories
-            .AsNoTracking()
-            .Where(c => c.WorkspaceId == workspaceId);
+            .AsNoTracking();
 
         var total = await query.CountAsync(ct);
         
@@ -56,12 +54,12 @@ public class CategoryRepository(SaldoaDbContext dbContext) : ICategoryRepository
         return new PagedResult<Category>(data, total, pageNumber, pageSize);
     }
 
-    public Task<bool> ExistsAsync(Guid workspaceId, string name, CancellationToken ct)
+    public Task<bool> ExistsAsync(string name, CancellationToken ct)
     {
         var nameNormalized = name.Trim().ToUpperInvariant();
         
         return dbContext.Categories.AnyAsync(
-            c => c.WorkspaceId == workspaceId && c.NormalizedName == nameNormalized,
+            c => c.NormalizedName == nameNormalized,
             ct);
     }
 }

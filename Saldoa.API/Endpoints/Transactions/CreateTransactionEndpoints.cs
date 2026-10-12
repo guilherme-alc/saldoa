@@ -1,8 +1,6 @@
 using FluentValidation;
 using Saldoa.API.Common;
-using Saldoa.API.Extensions;
 using Saldoa.Application.Transactions.Create;
-using System.Security.Claims;
 
 namespace Saldoa.API.Endpoints.Transactions;
 
@@ -12,11 +10,9 @@ internal static class CreateTransactionEndpoints
     {
         transactionsGroup.MapPost("/", 
             async Task<IResult> (
-                Guid workspaceId,
                 CreateTransactionRequest request,
                 CreateTransactionUseCase useCase,
                 IValidator<CreateTransactionRequest> validator,
-                ClaimsPrincipal user,
                 CancellationToken ct) =>
             {
                 var validation = await validator.ValidateAsync(request, ct);
@@ -35,9 +31,7 @@ internal static class CreateTransactionEndpoints
                     );
                 }
 
-                var userId = user.GetUserId();
-
-                var result = await useCase.ExecuteAsync(request, workspaceId, userId, ct);
+                var result = await useCase.ExecuteAsync(request, ct);
 
                 if (!result.IsSuccess)
                 {

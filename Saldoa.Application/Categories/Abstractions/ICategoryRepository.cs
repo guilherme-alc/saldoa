@@ -7,8 +7,8 @@ public interface ICategoryRepository
 {
     Task AddAsync(Category category, CancellationToken ct);
     void Remove(Category category);
-    Task<Category?> GetByIdAsync(long id, Guid workspaceId, CancellationToken ct);
-    Task<Category?> GetByIdForUpdateAsync(long id, Guid workspaceId, CancellationToken ct);
-    Task<PagedResult<Category>> ListAsync(int pageNumber, int pageSize, Guid workspaceId, CancellationToken ct); 
-    Task<bool> ExistsAsync(Guid workspaceId, string name, CancellationToken ct);
+    Task<Category?> GetByIdAsync(long id, CancellationToken ct);
+    Task<Category?> GetByIdForUpdateAsync(long id, CancellationToken ct);
+    Task<PagedResult<Category>> ListAsync(int pageNumber, int pageSize, CancellationToken ct); 
+    Task<bool> ExistsAsync(string name, CancellationToken ct);
 }

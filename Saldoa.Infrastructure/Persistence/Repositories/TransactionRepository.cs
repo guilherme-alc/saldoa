@@ -34,29 +34,28 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         dbContext.RemoveRange(transaction);
     }
 
-    public async Task<Transaction?> GetByIdAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Transaction?> GetByIdAsync(long id, CancellationToken ct)
     {
         return await dbContext.Transactions
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Id == id && t.WorkspaceId == workspaceId, ct);
+            .FirstOrDefaultAsync(t => t.Id == id, ct);
     }
 
-    public async Task<Transaction?> GetByIdForUpdateAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Transaction?> GetByIdForUpdateAsync(long id, CancellationToken ct)
     {
         return await dbContext.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.WorkspaceId == workspaceId, ct);
+            .FirstOrDefaultAsync(t => t.Id == id, ct);
     }
 
-    public async Task<Transaction?> GetByIdWithCategoryAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Transaction?> GetByIdWithCategoryAsync(long id, CancellationToken ct)
     {
         return await dbContext.Transactions
             .AsNoTracking()
             .Include(t => t.Category)
-            .FirstOrDefaultAsync(t => t.Id == id && t.WorkspaceId == workspaceId, ct);
+            .FirstOrDefaultAsync(t => t.Id == id, ct);
     }
     
     public async Task<PagedResult<Transaction>> ListByPeriodAsync(
-        Guid workspaceId,
         DateOnly startDate,
         DateOnly endDate,
         TransactionType? type,
@@ -68,8 +67,7 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         var query = dbContext
             .Transactions
             .AsNoTracking()
-            .Where(t => t.WorkspaceId == workspaceId &&
-                        t.PaidOrReceivedAt >= startDate &&
+            .Where(t => t.PaidOrReceivedAt >= startDate &&
                         t.PaidOrReceivedAt <= endDate);
 
         if (type != null)
@@ -95,7 +93,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
     }
 
     public async Task<decimal> GetTotalForPeriodAsync(
-        Guid workspaceId,
         long categoryId,
         DateOnly start,
         DateOnly end,
@@ -104,7 +101,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
     {
         return await dbContext.Transactions
             .Where(t =>
-                t.WorkspaceId == workspaceId &&
                 t.CategoryId == categoryId &&
                 t.PaidOrReceivedAt >= start &&
                 t.PaidOrReceivedAt <= end  &&
@@ -113,7 +109,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
     }
 
     public async Task<Dictionary<DateOnly, decimal>> GetTotalsByDateAsync(
-        Guid workspaceId, 
         long categoryId, 
         DateOnly start, 
         DateOnly end, 
@@ -123,7 +118,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         return await dbContext.Transactions
             .AsNoTracking()
             .Where(t =>
-                t.WorkspaceId == workspaceId &&
                 t.CategoryId == categoryId &&
                 t.PaidOrReceivedAt >= start &&
                 t.PaidOrReceivedAt <= end &&
@@ -138,7 +132,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
     }
 
     public async Task<Dictionary<DateOnly, decimal>> GetTotalsByDateExcludingAsync(
-        Guid workspaceId, 
         long categoryId, 
         DateOnly start, 
         DateOnly end, 
@@ -149,7 +142,6 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         return await dbContext.Transactions
             .AsNoTracking()
             .Where(t =>
-                t.WorkspaceId == workspaceId &&
                 t.CategoryId == categoryId &&
                 !excludeTransactionIds.Contains(t.Id) &&
                 t.PaidOrReceivedAt >= start &&
@@ -164,28 +156,26 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
             .ToDictionaryAsync(x => x.Date, x => x.Total, ct);
     }
 
-    public async Task<bool> ExistsForCategoryAsync(long categoryId, Guid workspaceId, CancellationToken ct)
+    public async Task<bool> ExistsForCategoryAsync(long categoryId, CancellationToken ct)
     {
         return await dbContext.Transactions
             .AsNoTracking()
             .AnyAsync(
-                t => t.CategoryId == categoryId && 
-                     t.WorkspaceId == workspaceId,
-                ct);
+                t => t.CategoryId == categoryId, ct);
     }
 
-    public async Task<List<Transaction>?> GetInstallmentsForUpdateAsync(Guid installmentGroupId, Guid workspaceId, CancellationToken ct)
+    public async Task<List<Transaction>?> GetInstallmentsForUpdateAsync(Guid installmentGroupId, CancellationToken ct)
     {
         return await dbContext.Transactions
-             .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId && t.WorkspaceId == workspaceId)
+             .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId)
              .ToListAsync(ct);
     }
 
-    public async Task<PagedResult<Transaction>> GetInstallmentsByGroupIdAsync(Guid installmentGroupId, Guid workspaceId, int pageNumber, int pageSize, CancellationToken ct)
+    public async Task<PagedResult<Transaction>> GetInstallmentsByGroupIdAsync(Guid installmentGroupId, int pageNumber, int pageSize, CancellationToken ct)
     {
         var query = dbContext.Transactions
             .AsNoTracking()
-            .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId && t.WorkspaceId == workspaceId);
+            .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId);
 
         var total = await query.CountAsync(ct);
 
@@ -198,13 +188,12 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
         return new PagedResult<Transaction>(data, total, pageNumber, pageSize);
     }
 
-    public async Task<InstallmentGroupHeader?> GetInstallmentGroupHeaderAsync(Guid installmentGroupId, Guid workspaceId, CancellationToken ct)
+    public async Task<InstallmentGroupHeader?> GetInstallmentGroupHeaderAsync(Guid installmentGroupId, CancellationToken ct)
     {
 
         var query = dbContext.Transactions
             .AsNoTracking()
-            .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId && 
-                t.WorkspaceId == workspaceId);
+            .Where(t => t.InstallmentInfo.InstallmentGroupId == installmentGroupId);
 
         var header = await query
             .Include(t => t.Category)

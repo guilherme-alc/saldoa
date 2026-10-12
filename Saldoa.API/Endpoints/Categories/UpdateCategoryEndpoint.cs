@@ -10,7 +10,6 @@ internal static class UpdateCategoryEndpoint
     {
         categoriesGroup.MapPut("/{id:long}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long id,
                 UpdateCategoryRequest request,
                 UpdateCategoryUseCase useCase,
@@ -33,7 +32,7 @@ internal static class UpdateCategoryEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(id, request, workspaceId, ct);
+                var result = await useCase.ExecuteAsync(id, request, ct);
             
                 if (!result.IsSuccess)
                 {

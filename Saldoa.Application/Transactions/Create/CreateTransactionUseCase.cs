@@ -14,22 +14,25 @@ public class CreateTransactionUseCase
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IUnitOfWork _unit;
+    private readonly IWorkspaceContext _workspaceContext;
     private readonly TransactionBudgetAnalyzer _transactionBudgetAnalyzer;
 
     public CreateTransactionUseCase(ITransactionRepository transactionRepository, 
         IUnitOfWork unit, 
         ICategoryRepository categoryRepository,
-        TransactionBudgetAnalyzer transactionBudgetAnalyzer)
+        TransactionBudgetAnalyzer transactionBudgetAnalyzer,
+        IWorkspaceContext workspaceContext)
     {
         _transactionRepository = transactionRepository;
         _unit = unit;
         _categoryRepository = categoryRepository;
         _transactionBudgetAnalyzer = transactionBudgetAnalyzer;
+        _workspaceContext = workspaceContext;
     }
 
-    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, Guid workspaceId, Guid userId, CancellationToken ct)
+    public async Task<Result<CreateTransactionsResponse>> ExecuteAsync(CreateTransactionRequest request, CancellationToken ct)
     {
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, workspaceId, ct);
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, ct);
         
         if(category == null)
         {
@@ -44,7 +47,6 @@ public class CreateTransactionUseCase
         if (request.Type == TransactionType.Expense)
         {
             budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
-                workspaceId,
                 request.CategoryId,
                 installments,
                 ct);
@@ -52,7 +54,7 @@ public class CreateTransactionUseCase
 
         var transactions = installments.Select(i =>
             new Transaction(
-                workspaceId,
+                _workspaceContext.WorkspaceId!.Value,
                 request.Title,
                 request.Description,
                 request.Type,
@@ -60,7 +62,7 @@ public class CreateTransactionUseCase
                 i.Date,
                 category.Id,
                 i.InstallmentInfo,
-                userId
+                _workspaceContext.UserId!.Value
             )
         ).ToList();
 

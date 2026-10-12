@@ -9,12 +9,11 @@ internal static class DeleteTransactionEndpoint
     {
         transactionsGroup.MapDelete("/{id:long}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long id,
                 DeleteTransactionUseCase useCase,
                 CancellationToken ct) =>
             {
-                var result = await useCase.ExecuteAsync(id, workspaceId, ct);
+                var result = await useCase.ExecuteAsync(id, ct);
 
                 if (!result.IsSuccess)
                 {

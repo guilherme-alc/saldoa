@@ -16,9 +16,9 @@ public class DeleteTransactionUseCase
         _unit = unit;
     }
 
-    public async Task<Result> ExecuteAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Result> ExecuteAsync(long id, CancellationToken ct)
     {
-        var transaction = await _transactionRepository.GetByIdForUpdateAsync(id, workspaceId, ct);
+        var transaction = await _transactionRepository.GetByIdForUpdateAsync(id, ct);
         if (transaction is null)
         {
             var error = TransactionErrors.NotFound;

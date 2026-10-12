@@ -10,7 +10,6 @@ internal static class ListTransactionsByPeriodEndpoint
     {
         transactionsGroup.MapGet("/", 
             async Task<IResult> (
-                Guid workspaceId,
                 [AsParameters] ListTransactionsByPeriodRequest request,
                 IValidator<ListTransactionsByPeriodRequest> validator,
                 ListTransactionsByPeriodUseCase useCase,
@@ -32,7 +31,7 @@ internal static class ListTransactionsByPeriodEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
+                var result = await useCase.ExecuteAsync(request, ct);
 
                 if (!result.IsSuccess)
                 {

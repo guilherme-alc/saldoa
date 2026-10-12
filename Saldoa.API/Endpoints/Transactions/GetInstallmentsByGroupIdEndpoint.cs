@@ -10,7 +10,6 @@ internal static class GetInstallmentsByGroupIdEndpoint
     {
         transactionsGroup.MapGet("/installment-groups/{installmentGroupId:guid}", 
             async Task<IResult> (
-                Guid workspaceId,
                 Guid installmentGroupId,
                 [AsParameters] GetInstallmentsByGroupIdRequest request,
                 GetInstallmentsByGroupIdUseCase useCase,
@@ -33,7 +32,7 @@ internal static class GetInstallmentsByGroupIdEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(workspaceId, installmentGroupId, request, ct);
+                var result = await useCase.ExecuteAsync(installmentGroupId, request, ct);
 
                 if (!result.IsSuccess)
                 {

@@ -10,7 +10,6 @@ internal static class CreateCategoryEndpoint
     {
         categoriesGroup.MapPost("/", 
             async Task<IResult>(
-                Guid workspaceId,
                 CreateCategoryRequest request,
                 CreateCategoryUseCase useCase,
                 IValidator<CreateCategoryRequest> validator,
@@ -32,7 +31,7 @@ internal static class CreateCategoryEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(request, workspaceId, ct);
+                var result = await useCase.ExecuteAsync(request, ct);
             
                 if (!result.IsSuccess)
                 {

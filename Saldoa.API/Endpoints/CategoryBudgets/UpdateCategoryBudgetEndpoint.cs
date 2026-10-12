@@ -11,7 +11,6 @@ internal static class UpdateCategoryBudgetEndpoint
         categoryBudgetsGroup.MapPut("/{id:long:min(1)}", 
             async Task<IResult> (
                 long id,
-                Guid workspaceId,
                 UpdateCategoryBudgetRequest request,
                 UpdateCategoryBudgetUseCase useCase,
                 IValidator<UpdateCategoryBudgetRequest> validator,
@@ -33,7 +32,7 @@ internal static class UpdateCategoryBudgetEndpoint
                     );
                 }
             
-                var result = await useCase.ExecuteAsync(workspaceId, id, request, ct);
+                var result = await useCase.ExecuteAsync(id, request, ct);
 
                 if (!result.IsSuccess)
                 {

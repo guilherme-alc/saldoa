@@ -15,7 +15,6 @@ namespace Saldoa.Application.Transactions.Common
         }
 
         public async Task<List<BudgetAlert>> AnalyzeAsync(
-            Guid workspaceId,
             long categoryId,
             List<InstallmentDraft> installments,
             IReadOnlyCollection<long> excludeTransactionIds,
@@ -29,7 +28,6 @@ namespace Saldoa.Application.Transactions.Common
             var installmentsEnd = installments.Max(i => i.Date);
 
             var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                workspaceId,
                 categoryId,
                 installmentsStart,
                 installmentsEnd,
@@ -41,7 +39,7 @@ namespace Saldoa.Application.Transactions.Common
             var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
             var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
 
-            var totalsByDate = await _transactionRepository.GetTotalsByDateExcludingAsync(workspaceId, categoryId, budgetsStart, budgetsEnd, excludeTransactionIds, ct, TransactionType.Expense);
+            var totalsByDate = await _transactionRepository.GetTotalsByDateExcludingAsync(categoryId, budgetsStart, budgetsEnd, excludeTransactionIds, ct, TransactionType.Expense);
 
             foreach (var budget in affectedBudgets)
             {
@@ -71,7 +69,6 @@ namespace Saldoa.Application.Transactions.Common
         }
 
         public async Task<List<BudgetAlert>> AnalyzeAsync(
-            Guid workspaceId,
             long categoryId,
             List<InstallmentDraft> installments,
             CancellationToken ct)
@@ -84,7 +81,6 @@ namespace Saldoa.Application.Transactions.Common
             var installmentsEnd = installments.Max(i => i.Date);
 
             var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                workspaceId,
                 categoryId,
                 installmentsStart,
                 installmentsEnd,
@@ -96,7 +92,7 @@ namespace Saldoa.Application.Transactions.Common
             var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
             var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
 
-            var totalsByDate = await _transactionRepository.GetTotalsByDateAsync(workspaceId, categoryId, budgetsStart, budgetsEnd, ct, TransactionType.Expense);
+            var totalsByDate = await _transactionRepository.GetTotalsByDateAsync(categoryId, budgetsStart, budgetsEnd, ct, TransactionType.Expense);
 
             foreach (var budget in affectedBudgets)
             {

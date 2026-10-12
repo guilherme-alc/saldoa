@@ -13,9 +13,9 @@ namespace Saldoa.Application.Transactions.GetInstallmentsByGroupId
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<Result<GetInstallmentsByGroupIdResponse>> ExecuteAsync(Guid workspaceId, Guid installmentGroupId, GetInstallmentsByGroupIdRequest request, CancellationToken ct)
+        public async Task<Result<GetInstallmentsByGroupIdResponse>> ExecuteAsync(Guid installmentGroupId, GetInstallmentsByGroupIdRequest request, CancellationToken ct)
         {
-            var headerResult = await _transactionRepository.GetInstallmentGroupHeaderAsync(installmentGroupId, workspaceId, ct);
+            var headerResult = await _transactionRepository.GetInstallmentGroupHeaderAsync(installmentGroupId, ct);
 
             if (headerResult is null)
             {
@@ -24,8 +24,7 @@ namespace Saldoa.Application.Transactions.GetInstallmentsByGroupId
             }
 
             var data = await _transactionRepository.GetInstallmentsByGroupIdAsync(
-                installmentGroupId, 
-                workspaceId, 
+                installmentGroupId,
                 request.PageNumber, 
                 request.PageSize, 
                 ct

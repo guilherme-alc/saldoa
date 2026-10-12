@@ -9,8 +9,7 @@ internal static class ListCategoryBudgetsEndpoint
     internal static void Map(RouteGroupBuilder categoryBudgetsGroup)
     {
         categoryBudgetsGroup.MapGet("/", 
-            async Task<IResult> (       
-                Guid workspaceId,
+            async Task<IResult> (
                 [AsParameters] ListCategoryBudgetsRequest request,
                 IValidator<ListCategoryBudgetsRequest> validator,
                 ListCategoryBudgetsUseCase useCase,
@@ -20,7 +19,7 @@ internal static class ListCategoryBudgetsEndpoint
                 if (!validation.IsValid)
                     return Results.BadRequest(validation.Errors);
             
-                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
+                var result = await useCase.ExecuteAsync(request, ct);
 
                 if (!result.IsSuccess)
                 {

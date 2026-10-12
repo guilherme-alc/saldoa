@@ -9,7 +9,6 @@ internal static class ListCategoriesEndpoint
     {
         categoriesGroup.MapGet("/", 
             async Task<IResult> (
-                Guid workspaceId,
                 [AsParameters] ListCategoriesRequest request,
                 IValidator<ListCategoriesRequest> validator,
                 ListCategoriesUseCase useCase,
@@ -31,7 +30,7 @@ internal static class ListCategoriesEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(workspaceId, request.PageNumber, request.PageSize, ct);
+                var result = await useCase.ExecuteAsync(request.PageNumber, request.PageSize, ct);
 
                 return TypedResults.Ok(result);
             }

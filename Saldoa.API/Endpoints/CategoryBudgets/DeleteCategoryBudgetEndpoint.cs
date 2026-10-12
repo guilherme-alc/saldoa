@@ -9,12 +9,11 @@ internal static class DeleteCategoryBudgetEndpoint
     {
         categoryBudgetsGroup.MapDelete("/{id:long:min(1)}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long id,
                 DeleteCategoryBudgetUseCase useCase,
                 CancellationToken ct) =>
             {      
-                var result = await useCase.ExecuteAsync(workspaceId, id, ct);
+                var result = await useCase.ExecuteAsync(id, ct);
 
                 if (!result.IsSuccess)
                 {

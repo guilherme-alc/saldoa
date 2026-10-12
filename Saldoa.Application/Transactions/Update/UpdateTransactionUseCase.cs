@@ -30,17 +30,16 @@ public class UpdateTransactionUseCase
     public async Task<Result<UpdateTransactionResponse>> ExecuteAsync(
         long id,
         UpdateTransactionRequest request,
-        Guid workspaceId,
         CancellationToken ct)
     {
-        var transaction = await _transactionRepository.GetByIdForUpdateAsync(id, workspaceId, ct);
+        var transaction = await _transactionRepository.GetByIdForUpdateAsync(id, ct);
         if (transaction is null)
         {
             var error = TransactionErrors.NotFound;
             return Result<UpdateTransactionResponse>.Failure(error);
         }
 
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, workspaceId, ct);
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, ct);
         if (category is null)
         {
             var error = CategoryErrors.NotFound;
@@ -65,7 +64,6 @@ public class UpdateTransactionUseCase
             var affectedTransactions = updateScope == TransactionUpdateScope.All
                 ? await _transactionRepository.GetInstallmentsForUpdateAsync(
                     transaction.InstallmentInfo.InstallmentGroupId.Value,
-                    workspaceId,
                     ct)
                 : [transaction];
 
@@ -92,7 +90,6 @@ public class UpdateTransactionUseCase
                 .ToList();
 
             budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
-                workspaceId,
                 request.CategoryId,
                 installmentDrafts,
                 affectedTransactionIds,
@@ -113,7 +110,6 @@ public class UpdateTransactionUseCase
             };
 
             budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
-                workspaceId,
                 request.CategoryId,
                 installmentDrafts,
                 [transaction.Id],

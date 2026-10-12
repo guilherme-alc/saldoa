@@ -13,12 +13,11 @@ public class ListCategoryBudgetsUseCase
         _categoryBudgetRepository = categoryBudgetRepository;
     }
 
-    public async Task<Result<PagedResult<CategoryBudgetResponse>>> ExecuteAsync(Guid workspaceId, ListCategoryBudgetsRequest request,
+    public async Task<Result<PagedResult<CategoryBudgetResponse>>> ExecuteAsync(ListCategoryBudgetsRequest request,
         CancellationToken ct)
     {
         var data = await _categoryBudgetRepository.ListAsync(request.PageNumber,
             request.PageSize,
-            workspaceId,
             request.StartDate,
             request.EndDate,
             request.Active,

@@ -19,9 +19,9 @@ public class DeleteCategoryUseCase
         _unit = unit;
     }
 
-    public async Task<Result> ExecuteAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Result> ExecuteAsync(long id, CancellationToken ct)
     {
-        var category = await _categoryRepository.GetByIdForUpdateAsync(id, workspaceId, ct);
+        var category = await _categoryRepository.GetByIdForUpdateAsync(id, ct);
         
         if (category is null)
         {
@@ -29,7 +29,7 @@ public class DeleteCategoryUseCase
             return Result.Failure(error);
         }
         
-        if (await _transactionRepository.ExistsForCategoryAsync(id, workspaceId, ct))
+        if (await _transactionRepository.ExistsForCategoryAsync(id, ct))
         {
             var error = CategoryErrors.HasTransactions;
             return Result.Failure(error);

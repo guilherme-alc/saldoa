@@ -10,7 +10,6 @@ internal static class UpdateTransactionEndpoint
     {
         transactionsGroup.MapPut("/{id:long}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long id,
                 UpdateTransactionRequest request,
                 UpdateTransactionUseCase useCase,
@@ -33,7 +32,7 @@ internal static class UpdateTransactionEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(id, request, workspaceId, ct);
+                var result = await useCase.ExecuteAsync(id, request, ct);
 
                 if (!result.IsSuccess)
                 {

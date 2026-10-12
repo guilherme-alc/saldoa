@@ -13,9 +13,9 @@ public class GetCategoryByIdUseCase
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Result<CategoryResponse>> ExecuteAsync(long id, Guid workspaceId, CancellationToken ct)
+    public async Task<Result<CategoryResponse>> ExecuteAsync(long id, CancellationToken ct)
     {
-        var category = await _categoryRepository.GetByIdAsync(id, workspaceId, ct);
+        var category = await _categoryRepository.GetByIdAsync(id, ct);
         
         if (category is null)
         {

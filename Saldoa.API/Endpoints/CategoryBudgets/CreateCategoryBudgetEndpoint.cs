@@ -10,7 +10,6 @@ internal static class CreateCategoryBudgetEndpoint
     {
         categoryBudgetsGroup.MapPost("/", 
             async Task<IResult> (
-                Guid workspaceId,
                 CreateCategoryBudgetRequest request,
                 IValidator<CreateCategoryBudgetRequest> validator,
                 CreateCategoryBudgetUseCase useCase,
@@ -32,7 +31,7 @@ internal static class CreateCategoryBudgetEndpoint
                     );
                 }
 
-                var result = await useCase.ExecuteAsync(workspaceId, request, ct);
+                var result = await useCase.ExecuteAsync(request, ct);
 
                 if (!result.IsSuccess)
                 {

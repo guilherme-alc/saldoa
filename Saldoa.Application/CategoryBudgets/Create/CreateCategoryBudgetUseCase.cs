@@ -1,3 +1,5 @@
+using Saldoa.Application.Categories.Abstractions;
+using Saldoa.Application.Categories.Common;
 using Saldoa.Application.CategoryBudgets.Abstractions;
 using Saldoa.Application.CategoryBudgets.Common;
 using Saldoa.Application.Common.Abstractions;
@@ -9,18 +11,33 @@ namespace Saldoa.Application.CategoryBudgets.Create;
 public class CreateCategoryBudgetUseCase
 {
     private readonly ICategoryBudgetRepository _categoryBudgetRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IUnitOfWork _unit;
+    private readonly IWorkspaceContext _workspaceContext;
 
-    public CreateCategoryBudgetUseCase(ICategoryBudgetRepository categoryBudgetRepository, IUnitOfWork unit)
+    public CreateCategoryBudgetUseCase(
+        ICategoryBudgetRepository categoryBudgetRepository, 
+        IUnitOfWork unit, 
+        IWorkspaceContext workspaceContext,
+        ICategoryRepository categoryRepository)
     {
         _categoryBudgetRepository = categoryBudgetRepository;
         _unit = unit;
+        _workspaceContext = workspaceContext;
+        _categoryRepository = categoryRepository;
     }
     
-    public async Task<Result<CategoryBudgetResponse>> ExecuteAsync(Guid workspaceId, CreateCategoryBudgetRequest request, CancellationToken ct)
+    public async Task<Result<CategoryBudgetResponse>> ExecuteAsync(CreateCategoryBudgetRequest request, CancellationToken ct)
     {
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, ct);
+
+        if (category == null)
+        {
+            var error = CategoryErrors.NotFound;
+            return Result<CategoryBudgetResponse>.Failure(error);
+        }
+
         if (await _categoryBudgetRepository.ExistsForPeriodAsync(
-                workspaceId, 
                 request.CategoryId, 
                 request.PeriodStart,
                 request.PeriodEnd, ct))
@@ -29,7 +46,7 @@ public class CreateCategoryBudgetUseCase
             return Result<CategoryBudgetResponse>.Failure(error);
         }
 
-        var categoryBudget = new CategoryBudget(request.CategoryId, request.PeriodStart, request.PeriodEnd, request.LimitAmount, workspaceId);
+        var categoryBudget = new CategoryBudget(request.CategoryId, request.PeriodStart, request.PeriodEnd, request.LimitAmount, _workspaceContext.WorkspaceId!.Value);
 
         await _categoryBudgetRepository.AddAsync(categoryBudget, ct);
         await _unit.SaveChangesAsync(ct);

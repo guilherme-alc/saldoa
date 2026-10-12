@@ -10,7 +10,6 @@ internal static class GetCategoryBudgetsByCategoryEndpoint
     {
         categoryBudgetsGroup.MapGet("/by-category/{categoryId:long:min(1)}", 
             async Task<IResult> (
-                Guid workspaceId,
                 long categoryId,
                 [AsParameters] GetCategoryBudgetsByCategoryRequest request,
                 IValidator<GetCategoryBudgetsByCategoryRequest> validator,
@@ -21,7 +20,7 @@ internal static class GetCategoryBudgetsByCategoryEndpoint
                 if(!validation.IsValid)
                     return Results.BadRequest(validation.Errors);
 
-                var result = await useCase.ExecuteAsync(workspaceId, categoryId, request, ct);
+                var result = await useCase.ExecuteAsync(categoryId, request, ct);
 
                 if (!result.IsSuccess)
                 {
