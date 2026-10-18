@@ -49,6 +49,7 @@ public class CreateTransactionUseCase
             budgetAlerts = await _transactionBudgetAnalyzer.AnalyzeAsync(
                 request.CategoryId,
                 installments,
+                [],
                 ct);
         }
 

@@ -128,6 +128,55 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                     b.ToTable("refresh_tokens", "auth");
                 });
 
+            modelBuilder.Entity("Saldoa.Domain.Entities.Budget", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("category_id")
+                        .IsRequired(false);
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal>("LimitAmount")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("limit_amount");
+
+                    b.Property<DateOnly>("PeriodEnd")
+                        .HasColumnType("date")
+                        .HasColumnName("period_end");
+
+                    b.Property<DateOnly>("PeriodStart")
+                        .HasColumnType("date")
+                        .HasColumnName("period_start");
+
+                    b.Property<short>("Scope")
+                        .HasColumnType("smallint")
+                        .HasColumnName("scope")
+                        .HasComment("1 = General, 2 = Category");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("workspace_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("WorkspaceId", "CategoryId", "PeriodStart", "PeriodEnd")
+                        .IsUnique();
+
+                    b.ToTable("budgets", "app");
+                });
+
             modelBuilder.Entity("Saldoa.Domain.Entities.Category", b =>
                 {
                     b.Property<long>("Id")
@@ -174,49 +223,6 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ux_categories_workspace_normalized_name");
 
                     b.ToTable("categories", "app");
-                });
-
-            modelBuilder.Entity("Saldoa.Domain.Entities.CategoryBudget", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CategoryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("category_id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<decimal>("LimitAmount")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("limit_amount");
-
-                    b.Property<DateOnly>("PeriodEnd")
-                        .HasColumnType("date")
-                        .HasColumnName("period_end");
-
-                    b.Property<DateOnly>("PeriodStart")
-                        .HasColumnType("date")
-                        .HasColumnName("period_start");
-
-                    b.Property<Guid>("WorkspaceId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("workspace_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("WorkspaceId", "CategoryId", "PeriodStart", "PeriodEnd")
-                        .IsUnique();
-
-                    b.ToTable("category_budgets", "app");
                 });
 
             modelBuilder.Entity("Saldoa.Domain.Entities.Transaction", b =>
@@ -547,6 +553,25 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Saldoa.Domain.Entities.Budget", b =>
+                {
+                    b.HasOne("Saldoa.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired(false)
+                        .HasConstraintName("fk_budget_category");
+
+                    b.HasOne("Saldoa.Domain.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_budget_workspace");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Saldoa.Domain.Entities.Category", b =>
                 {
                     b.HasOne("Saldoa.Domain.Entities.Workspace", null)
@@ -555,25 +580,6 @@ namespace Saldoa.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_categories_workspace");
-                });
-
-            modelBuilder.Entity("Saldoa.Domain.Entities.CategoryBudget", b =>
-                {
-                    b.HasOne("Saldoa.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_category_budgets_category");
-
-                    b.HasOne("Saldoa.Domain.Entities.Workspace", null)
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_category_budgets_workspace");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Saldoa.Domain.Entities.Transaction", b =>

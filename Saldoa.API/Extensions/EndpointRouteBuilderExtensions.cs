@@ -1,6 +1,6 @@
 using Saldoa.API.Endpoints.Auth;
 using Saldoa.API.Endpoints.Categories;
-using Saldoa.API.Endpoints.CategoryBudgets;
+using Saldoa.API.Endpoints.Budgets;
 using Saldoa.API.Endpoints.Transactions;
 
 namespace Saldoa.API.Extensions;
@@ -23,6 +23,6 @@ internal static class EndpointRouteBuilderExtensions
         v1.MapAuthEndpoints();
         workspaceScope.MapCategoryEndpoints();
         workspaceScope.MapTransactionEndpoints();
-        workspaceScope.MapCategoryBudgetEndpoints();
+        workspaceScope.MapBudgetEndpoints();
     }
 }

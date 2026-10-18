@@ -93,60 +93,45 @@ public class TransactionRepository(SaldoaDbContext dbContext) : ITransactionRepo
     }
 
     public async Task<decimal> GetTotalForPeriodAsync(
-        long categoryId,
+        long? categoryId,
         DateOnly start,
         DateOnly end,
         CancellationToken ct,
         TransactionType type = TransactionType.Expense)
     {
-        return await dbContext.Transactions
+        var query = dbContext.Transactions
             .Where(t =>
-                t.CategoryId == categoryId &&
-                t.PaidOrReceivedAt >= start &&
-                t.PaidOrReceivedAt <= end  &&
-                t.Type == type)
-            .SumAsync(t => t.Amount, ct);
-    }
+            t.PaidOrReceivedAt >= start &&
+            t.PaidOrReceivedAt <= end &&
+            t.Type == type);
 
-    public async Task<Dictionary<DateOnly, decimal>> GetTotalsByDateAsync(
-        long categoryId, 
-        DateOnly start, 
-        DateOnly end, 
-        CancellationToken ct, 
-        TransactionType type = TransactionType.Expense)
-    {
-        return await dbContext.Transactions
-            .AsNoTracking()
-            .Where(t =>
-                t.CategoryId == categoryId &&
-                t.PaidOrReceivedAt >= start &&
-                t.PaidOrReceivedAt <= end &&
-                t.Type == type)
-            .GroupBy(t => t.PaidOrReceivedAt)
-            .Select(g => new
-            {
-                Date = g.Key,
-                Total = g.Sum(t => t.Amount)
-            })
-            .ToDictionaryAsync(x => x.Date, x => x.Total, ct);
+        if(categoryId is not null)
+            query = query.Where(t => t.CategoryId == categoryId);
+
+        return await query.SumAsync(t => t.Amount, ct);
     }
 
     public async Task<Dictionary<DateOnly, decimal>> GetTotalsByDateExcludingAsync(
-        long categoryId, 
+        long? categoryId, 
         DateOnly start, 
         DateOnly end, 
         IReadOnlyCollection<long> excludeTransactionIds, 
         CancellationToken ct, 
         TransactionType type = TransactionType.Expense)
     {
-        return await dbContext.Transactions
+        var query = dbContext.Transactions
             .AsNoTracking()
             .Where(t =>
-                t.CategoryId == categoryId &&
                 !excludeTransactionIds.Contains(t.Id) &&
                 t.PaidOrReceivedAt >= start &&
                 t.PaidOrReceivedAt <= end &&
-                t.Type == type)
+                t.Type == type
+            );
+
+        if (categoryId is not null)
+            query = query.Where(t => t.CategoryId == categoryId);
+
+        return await query
             .GroupBy(t => t.PaidOrReceivedAt)
             .Select(g => new
             {

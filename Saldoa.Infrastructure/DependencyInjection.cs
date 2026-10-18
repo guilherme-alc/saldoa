@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Saldoa.Application.Auth.Abstractions;
 using Saldoa.Application.Categories.Abstractions;
-using Saldoa.Application.CategoryBudgets.Abstractions;
+using Saldoa.Application.Budgets.Abstractions;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Email.Abstractions;
 using Saldoa.Application.Identity.Abstractions;
@@ -47,7 +47,7 @@ namespace Saldoa.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
-            services.AddScoped<ICategoryBudgetRepository, CategoryBudgetRepository>();
+            services.AddScoped<IBudgetRepository, BudgetRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IWorkspaceMembershipRepository, WorkspaceMembershipRepository>();
 

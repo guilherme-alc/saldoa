@@ -1,4 +1,4 @@
-﻿using Saldoa.Application.CategoryBudgets.Abstractions;
+﻿using Saldoa.Application.Budgets.Abstractions;
 using Saldoa.Application.Transactions.Abstractions;
 using Saldoa.Domain.Enums;
 
@@ -6,11 +6,11 @@ namespace Saldoa.Application.Transactions.Common
 {
     public sealed class TransactionBudgetAnalyzer
     {
-        private readonly ICategoryBudgetRepository _categoryBudgetRepository;
+        private readonly IBudgetRepository _budgetRepository;
         private readonly ITransactionRepository _transactionRepository;
-        public TransactionBudgetAnalyzer(ICategoryBudgetRepository categoryBudgetRepository, ITransactionRepository transactionRepository)
+        public TransactionBudgetAnalyzer(IBudgetRepository budgetRepository, ITransactionRepository transactionRepository)
         {
-            _categoryBudgetRepository = categoryBudgetRepository;
+            _budgetRepository = budgetRepository;
             _transactionRepository = transactionRepository;
         }
 
@@ -27,7 +27,7 @@ namespace Saldoa.Application.Transactions.Common
             var installmentsStart = installments.Min(i => i.Date);
             var installmentsEnd = installments.Max(i => i.Date);
 
-            var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
+            var affectedBudgets = await _budgetRepository.GetActiveForPeriodAsync(
                 categoryId,
                 installmentsStart,
                 installmentsEnd,
@@ -39,82 +39,67 @@ namespace Saldoa.Application.Transactions.Common
             var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
             var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
 
-            var totalsByDate = await _transactionRepository.GetTotalsByDateExcludingAsync(categoryId, budgetsStart, budgetsEnd, excludeTransactionIds, ct, TransactionType.Expense);
+            var categoryTotalsByDate = new Dictionary<DateOnly, decimal>();
+            var generalTotalsByDate = new Dictionary<DateOnly, decimal>();
 
-            foreach (var budget in affectedBudgets)
+            if (affectedBudgets.Any(b => b.Scope == BudgetScope.Category))
             {
-                var installmentsPerBudget = installments.Where(i => i.Date >= budget.PeriodStart && i.Date <= budget.PeriodEnd);
-
-                if (installmentsPerBudget.Any())
-                {
-                    var amount = installmentsPerBudget.Sum(i => i.Amount);
-
-                    var spent = totalsByDate.Where(t => t.Key >= budget.PeriodStart && t.Key <= budget.PeriodEnd).Sum(t => t.Value);
-
-                    var totalProjected = spent + amount;
-
-                    if (totalProjected > budget.LimitAmount)
-                    {
-                        result.Add(new BudgetAlert(
-                            spent,
-                            totalProjected,
-                            budget.LimitAmount,
-                            $"Limite excedido para o período {budget.PeriodStart:dd/MM/yyyy} - {budget.PeriodEnd:dd/MM/yyyy}"
-                        ));
-                    }
-                }
+                categoryTotalsByDate =
+                    await _transactionRepository.GetTotalsByDateExcludingAsync(
+                        categoryId,
+                        budgetsStart,
+                        budgetsEnd,
+                        excludeTransactionIds,
+                        ct,
+                        TransactionType.Expense);
             }
 
-            return result;
-        }
-
-        public async Task<List<BudgetAlert>> AnalyzeAsync(
-            long categoryId,
-            List<InstallmentDraft> installments,
-            CancellationToken ct)
-        {
-            var result = new List<BudgetAlert>();
-            if (installments.Count == 0)
-                return result;
-
-            var installmentsStart = installments.Min(i => i.Date);
-            var installmentsEnd = installments.Max(i => i.Date);
-
-            var affectedBudgets = await _categoryBudgetRepository.GetActiveForPeriodAsync(
-                categoryId,
-                installmentsStart,
-                installmentsEnd,
-                ct);
-
-            if (affectedBudgets.Count == 0)
-                return result;
-
-            var budgetsStart = affectedBudgets.Min(b => b.PeriodStart);
-            var budgetsEnd = affectedBudgets.Max(b => b.PeriodEnd);
-
-            var totalsByDate = await _transactionRepository.GetTotalsByDateAsync(categoryId, budgetsStart, budgetsEnd, ct, TransactionType.Expense);
+            if (affectedBudgets.Any(b => b.Scope == BudgetScope.General))
+            {
+                generalTotalsByDate =
+                    await _transactionRepository.GetTotalsByDateExcludingAsync(
+                        null,
+                        budgetsStart,
+                        budgetsEnd,
+                        excludeTransactionIds,
+                        ct,
+                        TransactionType.Expense);
+            }
 
             foreach (var budget in affectedBudgets)
             {
-                var installmentsPerBudget = installments.Where(i => i.Date >= budget.PeriodStart && i.Date <= budget.PeriodEnd);
+                var totalsByDate = budget.Scope == BudgetScope.General
+                    ? generalTotalsByDate
+                    : categoryTotalsByDate;
 
-                if (installmentsPerBudget.Any())
+                var installmentsPerBudget = installments
+                    .Where(i => i.Date >= budget.PeriodStart && i.Date <= budget.PeriodEnd)
+                    .ToList();
+
+                if (installmentsPerBudget.Count == 0)
+                    continue;
+
+                var spent = totalsByDate
+                    .Where(t => 
+                        t.Key >= budget.PeriodStart && 
+                        t.Key <= budget.PeriodEnd)
+                    .Sum(t => t.Value);
+
+                var amount = installmentsPerBudget.Sum(i => i.Amount);
+
+                var totalProjected = spent + amount;
+
+                if (totalProjected > budget.LimitAmount)
                 {
-                    var amount = installmentsPerBudget.Sum(i => i.Amount);
-
-                    var spent = totalsByDate.Where(t => t.Key >= budget.PeriodStart && t.Key <= budget.PeriodEnd).Sum(t => t.Value);
-
-                    var totalProjected = spent + amount;
-
-                    if (totalProjected > budget.LimitAmount)
-                    {
-                        result.Add(new BudgetAlert(
-                            spent,
-                            totalProjected,
-                            budget.LimitAmount,
-                            $"Limite excedido para o período {budget.PeriodStart:dd/MM/yyyy} - {budget.PeriodEnd:dd/MM/yyyy}"
-                        ));
-                    }
+                    result.Add(new BudgetAlert(
+                        budget.Id,
+                        budget.Scope,
+                        spent,
+                        totalProjected,
+                        budget.LimitAmount,
+                        $"Orçamento excedido para o período " +
+                        $"{budget.PeriodStart:dd/MM/yyyy} - {budget.PeriodEnd:dd/MM/yyyy}"
+                    ));
                 }
             }
 

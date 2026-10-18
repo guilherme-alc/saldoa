@@ -23,7 +23,7 @@ namespace Saldoa.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Transaction> Transactions { get; set; } = null!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
-        public DbSet<CategoryBudget> CategoryBudgets { get; set; } = null!;
+        public DbSet<Budget> Budgets { get; set; } = null!;
         public DbSet<Workspace> Workspaces { get; set; } = null!;
         public DbSet<WorkspaceMembership> WorkspaceMemberships { get; set; } = null!;
         public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; } = null!;
@@ -46,7 +46,7 @@ namespace Saldoa.Infrastructure.Persistence
             builder.Entity<Category>()
                 .HasQueryFilter(c => c.WorkspaceId == CurrentWorkspaceId);
 
-            builder.Entity<CategoryBudget>()
+            builder.Entity<Budget>()
                 .HasQueryFilter(b => b.WorkspaceId == CurrentWorkspaceId);
         }
     }
