@@ -17,6 +17,7 @@ using Saldoa.Infrastructure.Identity;
 using Saldoa.Infrastructure.Persistence;
 using Saldoa.Infrastructure.Persistence.Repositories;
 using Saldoa.Infrastructure.Tenancy;
+using Saldoa.Application.Workspaces.Abstractions;
 
 namespace Saldoa.Infrastructure
 {
@@ -49,6 +50,7 @@ namespace Saldoa.Infrastructure
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IBudgetRepository, BudgetRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
             services.AddScoped<IWorkspaceMembershipRepository, WorkspaceMembershipRepository>();
 
             services.AddScoped<IJwtProvider, JwtProvider>();
