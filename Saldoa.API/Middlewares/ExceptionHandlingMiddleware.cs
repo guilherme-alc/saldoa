@@ -35,7 +35,12 @@ internal class ExceptionHandlingMiddleware
         }
         catch (DomainException ex)
         {
-            _logger.LogWarning(ex, "Violação de regra de domínio");
+            _logger.LogWarning(
+                ex,
+                "Violação de regra de domínio. RequestId: {RequestId}, {Method} {Path}",
+                context.TraceIdentifier,
+                context.Request.Method,
+                context.Request.Path);
 
             await WriteProblemAsync(
                     context,
@@ -46,7 +51,12 @@ internal class ExceptionHandlingMiddleware
         }
         catch (PersistenceConflictException ex)
         {
-            _logger.LogWarning(ex, "Conflito ao persistir dados");
+            _logger.LogWarning(
+                ex,
+                "Conflito ao persistir dados. RequestId: {RequestId}, {Method} {Path}",
+                context.TraceIdentifier,
+                context.Request.Method,
+                context.Request.Path);
 
             await WriteProblemAsync(
                     context,
@@ -57,7 +67,12 @@ internal class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro inesperado");
+            _logger.LogError(
+                ex,
+                "Erro inesperado. RequestId: {RequestId}, {Method} {Path}",
+                context.TraceIdentifier,
+                context.Request.Method,
+                context.Request.Path);
 
             await WriteProblemAsync(
                 context,

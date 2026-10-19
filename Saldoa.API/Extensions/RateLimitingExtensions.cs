@@ -32,6 +32,20 @@ internal static class RateLimitingExtensions
 
         options.OnRejected = async (context, cancellationToken) =>
         {
+            var httpContext = context.HttpContext;
+
+            var logger = httpContext.RequestServices
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("RateLimiting");
+
+            logger.LogWarning(
+                "Requisição rejeitada por limite de acesso. " +
+                "RequestId: {RequestId}, {Method} {Path}, StatusCode: {StatusCode}",
+                httpContext.TraceIdentifier,
+                httpContext.Request.Method,
+                httpContext.Request.Path,
+                StatusCodes.Status429TooManyRequests);
+
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
             {
                 context.HttpContext.Response.Headers.RetryAfter = Math.Ceiling(retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
