@@ -9,9 +9,10 @@ namespace Saldoa.UnitTests.Domain.Entities
         public static TheoryData<string?> BlankStrings => new()
         {
             "",
-            null,
+            (string?)null,
             " ",
-            "\t"
+            "\t",
+            "\n"
         };
 
         [Fact]
