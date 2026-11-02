@@ -6,24 +6,6 @@ namespace Saldoa.UnitTests.Domain.Entities
 {
     public class BudgetTests
     {
-        private readonly Budget _budgetGeneral = new(
-            null, 
-            BudgetScope.General, 
-            new DateOnly(2026, 10, 01), 
-            new DateOnly(2026, 10, 31), 
-            1300M, 
-            Guid.NewGuid()
-        );
-
-        private readonly Budget _budgetByCategory = new(
-            5L, 
-            BudgetScope.Category, 
-            new DateOnly(2026, 10, 01), 
-            new DateOnly(2026, 10, 31), 
-            250M, 
-            Guid.NewGuid()
-        );
-
         public static TheoryData<DateOnly, DateOnly> InvalidPeriod => new()
         {
             { new DateOnly(2026, 10, 01), new DateOnly(2026, 10, 01) },
