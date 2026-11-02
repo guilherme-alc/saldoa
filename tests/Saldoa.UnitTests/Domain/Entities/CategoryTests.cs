@@ -1,6 +1,5 @@
 ﻿using Saldoa.Domain.Entities;
 using Saldoa.Domain.Exceptions;
-using System.Drawing;
 
 namespace Saldoa.UnitTests.Domain.Entities
 {
