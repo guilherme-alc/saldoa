@@ -84,7 +84,7 @@ namespace Saldoa.UnitTests.Domain.Entities
         [Fact]
         public void GivenSinglePayment_WhenCreatingTransaction_ThenInitializesProperties()
         {
-            var lowDateTime = DateTimeOffset.Now;
+            var lowDateTime = DateTimeOffset.UtcNow;
             var workspaceId = Guid.NewGuid();
             var userId = Guid.NewGuid();
             var title = "Presente Irmão";
@@ -107,13 +107,14 @@ namespace Saldoa.UnitTests.Domain.Entities
             Assert.Equal(1, transaction.InstallmentInfo.InstallmentNumber);
             Assert.Null(transaction.InstallmentInfo.InstallmentGroupId);
             Assert.Equal(userId, transaction.CreatedByUserId);
-            Assert.InRange(transaction.CreatedAt, lowDateTime, DateTimeOffset.Now);
+            Assert.InRange(transaction.CreatedAt, lowDateTime, DateTimeOffset.UtcNow);
+            Assert.Equal(TimeSpan.Zero, transaction.CreatedAt.Offset);
         }
 
         [Fact]
         public void GivenMultiplePayments_WhenCreatingTransaction_ThenInitializesProperties()
         {
-            var lowDateTime = DateTimeOffset.Now;
+            var lowDateTime = DateTimeOffset.UtcNow;
             var workspaceId = Guid.NewGuid();
             var title = "Fone Bluetooth";
             var amount = 160.99M;
@@ -139,7 +140,8 @@ namespace Saldoa.UnitTests.Domain.Entities
             Assert.Equal(installmentNumber, transaction.InstallmentInfo.InstallmentNumber);
             Assert.Equal(installmentGroupId, transaction.InstallmentInfo.InstallmentGroupId);
             Assert.Equal(userId, transaction.CreatedByUserId);
-            Assert.InRange(transaction.CreatedAt, lowDateTime, DateTimeOffset.Now);
+            Assert.InRange(transaction.CreatedAt, lowDateTime, DateTimeOffset.UtcNow);
+            Assert.Equal(TimeSpan.Zero, transaction.CreatedAt.Offset);
         }
 
         [Fact]
