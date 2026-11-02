@@ -34,7 +34,7 @@ public class CreateBudgetValidator : AbstractValidator<CreateBudgetRequest>
         
         RuleFor(x => x)
             .Must(x =>
-                x.PeriodEnd >= x.PeriodStart)
+                x.PeriodEnd > x.PeriodStart)
             .WithMessage("A data final não pode ser menor que a data inicial.");
     }
 }

@@ -64,8 +64,8 @@ namespace Saldoa.Domain.Entities
         }
         private static (DateOnly start, DateOnly end) EnsureValidPeriod(DateOnly start, DateOnly end)
         {
-            if (start > end)
-                throw new DomainException("O início do período não pode ser maior que o fim.");
+            if (start >= end)
+                throw new DomainException("O início do período não pode ser maior ou igual ao fim.");
 
             return (start, end);
         }
