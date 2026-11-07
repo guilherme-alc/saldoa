@@ -8,6 +8,7 @@ namespace Saldoa.Domain.Entities
 {
     public class WorkspaceInvitation
     {
+        private readonly TimeProvider _timeProvider = TimeProvider.System;
         private WorkspaceInvitation() { }
         public WorkspaceInvitation(
             string email, 
@@ -16,11 +17,14 @@ namespace Saldoa.Domain.Entities
             string token, 
             WorkspaceRole role,
             Guid invitedByUserId, 
-            DateTimeOffset expiresAt)
+            DateTimeOffset expiresAt,
+            TimeProvider? timeProvider = null)
         {
             if (workspaceId == Guid.Empty)
                 throw new DomainException("Workspace inválido.");
 
+            if(timeProvider is not null)
+                _timeProvider = timeProvider;
 
             EnsureValidUserId(invitedByUserId);
             EnsureValidToken(token);
@@ -33,8 +37,8 @@ namespace Saldoa.Domain.Entities
             Role = EnsureValidRole(role);
             Status = WorkspaceInvitationStatus.Pending;
             InvitedByUserId = invitedByUserId;
-            CreatedAt = DateTimeOffset.UtcNow;
-            ExpiresAt = EnsureValidExpiresAt(expiresAt);
+            CreatedAt = _timeProvider.GetUtcNow();
+            ExpiresAt = EnsureValidExpiresAt(expiresAt).ToUniversalTime();
         }
         public Guid Id { get; private set; }
         public string Email { get; private set; } = null!;
@@ -53,20 +57,20 @@ namespace Saldoa.Domain.Entities
         {
             CheckCurrentStatus("aceitar");
 
-            if (DateTimeOffset.UtcNow >= ExpiresAt)
+            if (_timeProvider.GetUtcNow() >= ExpiresAt)
                 throw new DomainException("Não foi possível aceitar, o convite já expirou.");
 
             EnsureValidUserId(userId);
             AcceptedByUserId = userId;
             Status = WorkspaceInvitationStatus.Accepted;
-            AcceptedAt = DateTimeOffset.UtcNow;
+            AcceptedAt = _timeProvider.GetUtcNow();
         }
 
         public void Decline()
         {
             CheckCurrentStatus("recusar");
 
-            if (DateTimeOffset.UtcNow >= ExpiresAt)
+            if (_timeProvider.GetUtcNow() >= ExpiresAt)
                 throw new DomainException("Não foi possível recusar, o convite já expirou.");
 
             Status = WorkspaceInvitationStatus.Declined;
@@ -88,7 +92,7 @@ namespace Saldoa.Domain.Entities
         {
             CheckCurrentStatus("expirar");
 
-            if (ExpiresAt > DateTimeOffset.UtcNow)
+            if (ExpiresAt > _timeProvider.GetUtcNow())
                 throw new DomainException("Falha ao expirar convite.");
 
             Status = WorkspaceInvitationStatus.Expired;
@@ -121,7 +125,7 @@ namespace Saldoa.Domain.Entities
             if (string.IsNullOrWhiteSpace(email))
                 throw new DomainException("Email inválido.");
 
-            if (!Regex.IsMatch(email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+            if (!Regex.IsMatch(email, @"\A[^\s@]+@[^\s@]+\.[^\s@]+\z"))
                 throw new DomainException("Email inválido.");
 
             return email;
