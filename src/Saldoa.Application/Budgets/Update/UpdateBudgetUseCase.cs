@@ -26,8 +26,11 @@ public class UpdateBudgetUseCase
             return Result.Failure(error);
         }
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        if(budget.PeriodEnd < today)
+        var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"); // remover quando adicionar o TimeZoneId no Workspace
+
+        var localNow = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, userTimeZone);
+        var today = DateOnly.FromDateTime(localNow.DateTime);
+        if (budget.PeriodEnd < today)
         {
             var error = BudgetErrors.ClosedPeriod;
             return Result.Failure(error);

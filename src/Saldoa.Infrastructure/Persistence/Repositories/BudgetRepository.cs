@@ -43,8 +43,11 @@ public class BudgetRepository(SaldoaDbContext dbContext) : IBudgetRepository
         bool? active,
         CancellationToken ct)
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        
+        var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"); // remover quando adicionar o TimeZoneId no Workspace
+
+        var localNow = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, userTimeZone);
+        var today = DateOnly.FromDateTime(localNow.DateTime);
+
         var query = dbContext
             .Budgets
             .AsNoTracking();
