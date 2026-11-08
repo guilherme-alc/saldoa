@@ -11,7 +11,7 @@ namespace Saldoa.UnitTests.Domain.Entities
     {
         private static readonly string _token = WorkspaceInvitation.GenerateToken();
         private readonly FakeTimeProvider _clock = new(new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero));
-        public static TheoryData<string?> BlankStrings => new()
+        public static readonly TheoryData<string?> BlankStrings = new()
         {
             "",
             (string?)null,

@@ -7,7 +7,7 @@ namespace Saldoa.UnitTests.Domain.Entities
 {
     public class TransactionTests
     {
-        public static TheoryData<string?> BlankStrings => new()
+        public static readonly TheoryData<string?> BlankStrings = new()
         {
             "",
             (string?)null,

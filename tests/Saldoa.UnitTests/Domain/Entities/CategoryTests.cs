@@ -5,7 +5,7 @@ namespace Saldoa.UnitTests.Domain.Entities
 {
     public class CategoryTests
     {
-        public static TheoryData<string?> BlankStrings => new()
+        public static readonly TheoryData<string?> BlankStrings = new()
         {
             "",
             (string?)null,
