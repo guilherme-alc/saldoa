@@ -1,0 +1,51 @@
+name: CI Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('src/**/*.csproj', 'tests/**/*.csproj', '*.slnx') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build application
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --solution Saldoa.slnx --configuration Release --no-build --coverlet --coverlet-output-format cobertura --results-directory TestResults
+
+      - name: Generate coverage reports
+        run: python3 .github/scripts/coverage-report.py TestResults
+
+      - name: Publish coverage summary
+        run: cat TestResults/CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ github.run_attempt }}
+          path: TestResults/CoverageReport/
+          if-no-files-found: error
