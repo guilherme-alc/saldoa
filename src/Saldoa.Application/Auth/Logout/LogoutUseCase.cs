@@ -17,7 +17,7 @@ public sealed class LogoutUseCase
 
     public async Task<Result> ExecuteAsync(string refreshTokenRaw, CancellationToken ct)
     {
-        var hash = RefreshTokenCrypto.HashToken(refreshTokenRaw);
+        var hash = RefreshToken.HashToken(refreshTokenRaw);
         var stored = await _refreshRepo.GetByHashAsync(hash, ct);
         
         if (stored is null)
