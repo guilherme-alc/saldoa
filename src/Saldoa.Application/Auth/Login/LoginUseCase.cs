@@ -7,31 +7,16 @@ using Saldoa.Domain.Auth;
 
 namespace Saldoa.Application.Auth.Login;
 
-public class LoginUseCase
+public class LoginUseCase(
+    IIdentityService identityService,
+    IJwtProvider jwtProvider,
+    IRefreshTokenRepository refreshRepo,
+    IRefreshTokenGenerator refreshTokenService,
+    IUnitOfWork unitOfWork)
 {
-    private readonly IIdentityService _identityService;
-    private readonly IJwtProvider _jwtProvider;
-    private readonly IRefreshTokenRepository _refreshRepo;
-    private readonly IRefreshTokenGenerator _refreshTokenService;
-    private readonly IUnitOfWork _unitOfWork;
-    
-    public LoginUseCase(
-        IIdentityService identityService, 
-        IJwtProvider jwt, 
-        IRefreshTokenRepository refreshRepo,
-        IRefreshTokenGenerator refreshTokenService,
-        IUnitOfWork unitOfWork)
-    {
-        _identityService = identityService;
-        _jwtProvider = jwt;
-        _refreshRepo = refreshRepo;
-        _refreshTokenService = refreshTokenService;
-        _unitOfWork = unitOfWork;
-    }
-    
     public async Task<Result<AuthResult>> ExecuteAsync(LoginRequest request, CancellationToken ct)
     {
-        var result = await _identityService
+        var result = await identityService
             .SignInAsync(request.Email, request.Password, ct);
 
         if (!result.IsSuccess)
@@ -43,16 +28,16 @@ public class LoginUseCase
             return Result<AuthResult>.Failure(AuthErrors.InvalidAccess);
         }
 
-        var accessTokenResult = _jwtProvider.CreateAccessToken(
+        var accessTokenResult = jwtProvider.CreateAccessToken(
             userId: result.Value!,
             email: request.Email,
             claims: []);
         
-        var refreshToken = _refreshTokenService.Generate();
+        var refreshToken = refreshTokenService.Generate();
         
-        var entity = new RefreshToken(refreshToken.TokenHash, result.Value!, refreshToken.ExpiresAt);
-        await _refreshRepo.AddAsync(entity, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        var entityRefreshToken = new RefreshToken(refreshToken.RawToken, result.Value!, refreshToken.ExpiresAt);
+        await refreshRepo.AddAsync(entityRefreshToken, ct);
+        await unitOfWork.SaveChangesAsync(ct);
         
         return Result<AuthResult>.Success(
             new AuthResult(

@@ -25,10 +25,12 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 
         builder.Property(rt => rt.ExpiresAt)
             .HasColumnName("expires_at")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
         
         builder.Property(x => x.RevokedAt)
-            .HasColumnName("revoked_at");
+            .HasColumnName("revoked_at")
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(x => x.ReplacedByTokenHash)
             .HasColumnName("replaced_by_token_hash");

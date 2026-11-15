@@ -1,24 +1,16 @@
 using Saldoa.Application.Auth.Abstractions;
 using Saldoa.Application.Common.Abstractions;
 using Saldoa.Application.Common.Results;
+using Saldoa.Domain.Auth;
 
 namespace Saldoa.Application.Auth.Logout;
 
-public sealed class LogoutUseCase
+public sealed class LogoutUseCase(IRefreshTokenRepository refreshRepo, IUnitOfWork unitOfWork)
 {
-    private readonly IRefreshTokenRepository _refreshRepo;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public LogoutUseCase(IRefreshTokenRepository refreshRepo, IUnitOfWork unitOfWork)
-    {
-        _refreshRepo = refreshRepo;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> ExecuteAsync(string refreshTokenRaw, CancellationToken ct)
     {
         var hash = RefreshToken.HashToken(refreshTokenRaw);
-        var stored = await _refreshRepo.GetByHashAsync(hash, ct);
+        var stored = await refreshRepo.GetByHashAsync(hash, ct);
         
         if (stored is null)
             return Result.Success();
@@ -26,7 +18,7 @@ public sealed class LogoutUseCase
         if (!stored.IsRevoked)
         {
             stored.Revoke();
-            await _unitOfWork.SaveChangesAsync(ct);
+            await unitOfWork.SaveChangesAsync(ct);
         }
 
         return Result.Success();

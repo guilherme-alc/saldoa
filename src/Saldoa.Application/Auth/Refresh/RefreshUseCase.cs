@@ -9,11 +9,11 @@ namespace Saldoa.Application.Auth.Refresh;
 
 public sealed class RefreshUseCase(
     IRefreshTokenRepository refreshRepository,
-        IJwtProvider jwtProvider,
-        IIdentityService identityService,
-        IRefreshTokenGenerator refreshTokenService,
-        IUnitOfWork unitOfWork)
-    {
+    IJwtProvider jwtProvider,
+    IIdentityService identityService,
+    IRefreshTokenGenerator refreshTokenService,
+    IUnitOfWork unitOfWork)
+{
     public async Task<Result<AuthResult>> ExecuteAsync(string refreshTokenRaw, CancellationToken ct)
     {
         var hash = RefreshToken.HashToken(refreshTokenRaw);
