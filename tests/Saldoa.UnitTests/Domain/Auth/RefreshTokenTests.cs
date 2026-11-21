@@ -4,7 +4,7 @@ using Saldoa.Domain.Exceptions;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Saldoa.UnitTests.Auth
+namespace Saldoa.UnitTests.Domain.Auth
 {
     public class RefreshTokenTests
     {
