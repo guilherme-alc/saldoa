@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Saldoa.Application\Saldoa.Application.csproj" />
     <ProjectReference Include="..\..\src\Saldoa.Domain\Saldoa.Domain.csproj" />
   </ItemGroup>
 
